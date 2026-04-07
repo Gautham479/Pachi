@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-500: #3b82f6; /* Professional True Blue */
+  --color-primary-600: #2563eb;
+  --color-primary-900: #1e3a8a;
+  
+  --color-accent-400: #10b981; /* Emerald */
+  --color-accent-500: #059669;
+  --color-accent-600: #047857;
+  
+  --color-surface-bg: #020617; /* Slate 950 - Extremely professional dark blue-slate */
+  --color-surface-card: #0f172a; /* Slate 900 */
+  --color-surface-border: #1e293b; /* Slate 800 */
+  
+  --color-promo-banner: #3b82f6;
+}
+
+@layer base {
+  body {
+    @apply bg-[var(--color-surface-bg)] text-[#DCD1CC] antialiased font-sans;
+  }
+}
