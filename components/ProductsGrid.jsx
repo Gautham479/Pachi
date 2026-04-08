@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { ShoppingCart } from 'lucide-react';
 import { useStore } from '@/store/useStore';
@@ -13,6 +14,7 @@ const MOCK_PRODUCTS = [
     description: 'A fully flexible printed dragon with stunning details.',
     material: 'Silk',
     price: 1599,
+    image: '/products/dragon.jpg',
     imageColor: 'from-[#ff7e5f] to-[#feb47b]',
     type: 'Collectible'
   },
@@ -22,6 +24,7 @@ const MOCK_PRODUCTS = [
     description: 'Sleek geometric design to keep your desk organized.',
     material: 'Matte PETG',
     price: 999,
+    image: '/products/headphone-stand.jpg',
     imageColor: 'from-[#2193b0] to-[#6dd5ed]',
     type: 'Desk Accessory'
   },
@@ -31,6 +34,7 @@ const MOCK_PRODUCTS = [
     description: 'Mathematical topological surface designed for indoor plants.',
     material: 'Wood-fill PLA',
     price: 2499,
+    image: '/products/planter.jpg',
     imageColor: 'from-[#11998e] to-[#38ef7d]',
     type: 'Home Decor'
   },
@@ -77,7 +81,7 @@ export default function ProductsGrid() {
   const handleAddToCart = (product) => {
     addDirectItemToCart({
       fileName: product.name,
-      config: { material: product.material, quality: 'Pre-printed', color: 'As shown' },
+      config: { material: product.material, quality: 'Pre-printed', color: 'As shown', strength: 20 },
       price: product.price
     });
     openCart();
@@ -112,17 +116,29 @@ export default function ProductsGrid() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.1, duration: 0.5 }}
+            className="flex flex-col"
           >
             <Link href={`/products/${product.id}`}>
               <div className="bg-[#1a1a1b]/80 backdrop-blur-xl border border-white/5 rounded-2xl overflow-hidden hover:border-[rgba(249,115,22,0.3)] transition-all group flex flex-col h-full cursor-pointer transform hover:scale-105">
-                {/* Placeholder Image using gradients */}
-                <div className={`w-full h-48 bg-gradient-to-br ${product.imageColor} relative opacity-80 group-hover:opacity-100 transition-opacity`}>
-                   <div className="absolute inset-0 bg-black/20" />
-                   <div className="absolute inset-0 flex items-center justify-center">
-                       <span className="text-white/80 font-medium tracking-widest uppercase text-sm drop-shadow-md">
+                {/* Product Image */}
+                <div className={`w-full h-48 relative opacity-80 group-hover:opacity-100 transition-opacity ${product.image ? '' : `bg-gradient-to-br ${product.imageColor}`}`}>
+                   {product.image ? (
+                     <Image
+                       src={product.image}
+                       alt={product.name}
+                       fill
+                       className="object-cover"
+                     />
+                   ) : (
+                     <>
+                       <div className="absolute inset-0 bg-black/20" />
+                       <div className="absolute inset-0 flex items-center justify-center">
+                         <span className="text-white/80 font-medium tracking-widest uppercase text-sm drop-shadow-md">
                            3D Model
-                       </span>
-                   </div>
+                         </span>
+                       </div>
+                     </>
+                   )}
                 </div>
                 
                 <div className="p-5 flex flex-col flex-grow">
@@ -147,8 +163,12 @@ export default function ProductsGrid() {
 
             {/* Add to Cart Button */}
             <button 
-              onClick={() => handleAddToCart(product)}
-              className="w-full py-2.5 rounded-lg bg-white/5 hover:bg-brand-orange hover:text-white text-white/90 font-medium transition-all flex items-center justify-center gap-2 text-sm mt-3 group-hover:border-transparent border border-white/10"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleAddToCart(product);
+              }}
+              className="w-full py-2.5 rounded-lg bg-brand-orange hover:bg-brand-orange/90 text-white font-semibold transition-all flex items-center justify-center gap-2 text-sm mt-3 shadow-lg shadow-brand-orange/30"
             >
               <ShoppingCart className="w-4 h-4" />
               Add to Cart

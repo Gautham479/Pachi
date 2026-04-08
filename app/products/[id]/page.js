@@ -1,11 +1,13 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft, ShoppingCart, Check } from 'lucide-react';
 import { useStore } from '@/store/useStore';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import CartDrawer from '@/components/CartDrawer';
 
 const MOCK_PRODUCTS = [
   {
@@ -15,6 +17,7 @@ const MOCK_PRODUCTS = [
     fullDescription: 'This articulated dragon is designed with precision joints that allow for smooth, realistic movement. Perfect for collectors and enthusiasts of fantasy art, this 3D printed marvel combines intricate detailing with functional flexibility.',
     material: 'Silk',
     price: 1599,
+    image: '/products/dragon.jpg',
     imageColor: 'from-[#ff7e5f] to-[#feb47b]',
     type: 'Collectible',
     specs: {
@@ -31,6 +34,7 @@ const MOCK_PRODUCTS = [
     fullDescription: 'A minimalist headphone stand with clean geometric lines. Designed to complement modern desk setups while providing sturdy support for your headphones. Perfect for productivity enthusiasts.',
     material: 'Matte PETG',
     price: 999,
+    image: '/products/headphone-stand.jpg',
     imageColor: 'from-[#2193b0] to-[#6dd5ed]',
     type: 'Desk Accessory',
     specs: {
@@ -47,6 +51,7 @@ const MOCK_PRODUCTS = [
     fullDescription: 'A mathematically inspired planter with a unique topological surface pattern. The organic, flowing design creates visual interest while providing a functional home for small indoor plants.',
     material: 'Wood-fill PLA',
     price: 2499,
+    image: '/products/planter.jpg',
     imageColor: 'from-[#11998e] to-[#38ef7d]',
     type: 'Home Decor',
     specs: {
@@ -111,6 +116,7 @@ export default function ProductPage() {
   const router = useRouter();
   const [product, setProduct] = useState(null);
   const [addedToCart, setAddedToCart] = useState(false);
+  const [imageHovered, setImageHovered] = useState(false);
   const addDirectItemToCart = useStore((state) => state.addDirectItemToCart);
   const openCart = useStore((state) => state.openCart);
 
@@ -123,13 +129,12 @@ export default function ProductPage() {
     if (product) {
       addDirectItemToCart({
         fileName: product.name,
-        config: { material: product.material, quality: 'Pre-printed', color: 'As shown' },
+        config: { material: product.material, quality: 'Pre-printed', color: 'As shown', strength: 20 },
         price: product.price
       });
       setAddedToCart(true);
-      setTimeout(() => {
-        openCart();
-      }, 500);
+      openCart();
+      setTimeout(() => setAddedToCart(false), 2000);
     }
   };
 
@@ -137,6 +142,7 @@ export default function ProductPage() {
     return (
       <div className="flex flex-col min-h-screen bg-surface-bg">
         <Navbar />
+        <CartDrawer />
         <div className="flex-1 flex items-center justify-center">
           <p className="text-white/60">Loading product...</p>
         </div>
@@ -148,6 +154,7 @@ export default function ProductPage() {
   return (
     <div className="flex flex-col min-h-screen bg-surface-bg">
       <Navbar />
+      <CartDrawer />
       
       <div className="flex-1 max-w-[1400px] mx-auto w-full px-4 sm:px-6 lg:px-8 py-12">
         {/* Back Button */}
@@ -162,13 +169,31 @@ export default function ProductPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Product Image */}
           <div className="flex items-center justify-center">
-            <div className={`w-full h-96 bg-gradient-to-br ${product.imageColor} rounded-2xl shadow-2xl relative overflow-hidden`}>
-              <div className="absolute inset-0 bg-black/10" />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-white/70 font-medium tracking-widest uppercase text-lg drop-shadow-lg">
-                  3D Model Preview
-                </span>
-              </div>
+            <div 
+              onMouseEnter={() => setImageHovered(true)}
+              onMouseLeave={() => setImageHovered(false)}
+              className={`w-full h-96 rounded-2xl shadow-2xl relative overflow-hidden cursor-pointer transition-all duration-300 transform ${
+                imageHovered ? 'scale-110 -translate-y-4 shadow-2xl' : 'scale-100'
+              } ${product.image ? '' : `bg-gradient-to-br ${product.imageColor}`}`}
+            >
+              {product.image ? (
+                <Image
+                  src={product.image}
+                  alt={product.name}
+                  fill
+                  className="object-cover"
+                  priority
+                />
+              ) : (
+                <>
+                  <div className="absolute inset-0 bg-black/10" />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-white/70 font-medium tracking-widest uppercase text-lg drop-shadow-lg">
+                      3D Model Preview
+                    </span>
+                  </div>
+                </>
+              )}
             </div>
           </div>
 
@@ -258,8 +283,17 @@ export default function ProductPage() {
                   onClick={() => router.push(`/products/${p.id}`)}
                   className="bg-[#1a1a1b]/80 backdrop-blur-xl border border-white/5 rounded-2xl overflow-hidden hover:border-[rgba(249,115,22,0.3)] transition-all cursor-pointer group"
                 >
-                  <div className={`w-full h-40 bg-gradient-to-br ${p.imageColor} relative opacity-80 group-hover:opacity-100 transition-opacity`}>
-                    <div className="absolute inset-0 bg-black/20" />
+                  <div className={`w-full h-40 relative opacity-80 group-hover:opacity-100 transition-opacity ${p.image ? '' : `bg-gradient-to-br ${p.imageColor}`}`}>
+                    {p.image ? (
+                      <Image
+                        src={p.image}
+                        alt={p.name}
+                        fill
+                        className="object-cover"
+                      />
+                    ) : (
+                      <div className="absolute inset-0 bg-black/20" />
+                    )}
                   </div>
                   <div className="p-4">
                     <h3 className="text-white font-medium text-sm mb-1">{p.name}</h3>

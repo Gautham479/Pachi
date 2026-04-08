@@ -42,7 +42,12 @@ export default function Navbar() {
   };
 
   const goToHome = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // If on product page, navigate to home; otherwise scroll to top
+    if (typeof window !== 'undefined' && window.location.pathname !== '/') {
+      router.push('/');
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
   return (
@@ -63,7 +68,6 @@ export default function Navbar() {
               
               {/* Links */}
               <div className="hidden lg:flex items-center gap-6 text-sm font-semibold text-[#DCD1CC]">
-                <button onClick={() => scrollTo('quote')} className={`transition-colors ${activeSection === 'quote' ? 'text-primary-500' : 'hover:text-white'}`}>Instant Quote</button>
                 <button onClick={() => scrollTo('features')} className={`transition-colors ${activeSection === 'features' ? 'text-primary-500' : 'hover:text-white'}`}>Features</button>
                 <button onClick={() => scrollTo('how-it-works')} className={`transition-colors ${activeSection === 'how-it-works' ? 'text-primary-500' : 'hover:text-white'}`}>How It Works</button>
                 <button onClick={() => scrollTo('faq')} className={`transition-colors ${activeSection === 'faq' ? 'text-primary-500' : 'hover:text-white'}`}>FAQ</button>

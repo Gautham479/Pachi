@@ -37,15 +37,8 @@ export default function CartDrawer() {
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-6">
           {cart.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-center space-y-4">
-              <ShoppingCart className="w-16 h-16 text-surface-border" />
-              <p className="text-[#8B8581] font-medium">Your cart is completely empty.</p>
-              <button 
-                onClick={closeCart}
-                className="mt-4 px-6 py-2 bg-primary-500 hover:bg-primary-600 text-white font-bold rounded-full transition-colors text-sm"
-              >
-                Start Quoting
-              </button>
+            <div className="flex items-center justify-center h-full">
+              <p className="text-white/60 text-center text-lg">Your Cart is empty</p>
             </div>
           ) : (
             <div className="space-y-4">
