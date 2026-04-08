@@ -34,10 +34,17 @@ export default function Navbar() {
   }, []);
 
   const scrollTo = (id) => {
-    const el = document.getElementById(id);
-    if (el) {
-      const y = el.getBoundingClientRect().top + window.scrollY - 80;
-      window.scrollTo({ top: y, behavior: 'smooth' });
+    // Check if we're on a product page
+    if (typeof window !== 'undefined' && window.location.pathname !== '/') {
+      // Navigate to home first, then scroll
+      router.push(`/?section=${id}`);
+    } else {
+      // Already on home page, scroll to section
+      const el = document.getElementById(id);
+      if (el) {
+        const y = el.getBoundingClientRect().top + window.scrollY - 80;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      }
     }
   };
 

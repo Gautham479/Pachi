@@ -17,7 +17,7 @@ const MOCK_PRODUCTS = [
     fullDescription: 'This articulated dragon is designed with precision joints that allow for smooth, realistic movement. Perfect for collectors and enthusiasts of fantasy art, this 3D printed marvel combines intricate detailing with functional flexibility.',
     material: 'Silk',
     price: 1599,
-    image: '/products/dragon.jpg',
+    image: '/products/dragon.png',
     imageColor: 'from-[#ff7e5f] to-[#feb47b]',
     type: 'Collectible',
     specs: {
@@ -33,8 +33,8 @@ const MOCK_PRODUCTS = [
     description: 'Sleek geometric design to keep your desk organized.',
     fullDescription: 'A minimalist headphone stand with clean geometric lines. Designed to complement modern desk setups while providing sturdy support for your headphones. Perfect for productivity enthusiasts.',
     material: 'Matte PETG',
-    price: 999,
-    image: '/products/headphone-stand.jpg',
+    price: 100,
+    image: '/products/headphone-stand.png',
     imageColor: 'from-[#2193b0] to-[#6dd5ed]',
     type: 'Desk Accessory',
     specs: {
@@ -51,7 +51,7 @@ const MOCK_PRODUCTS = [
     fullDescription: 'A mathematically inspired planter with a unique topological surface pattern. The organic, flowing design creates visual interest while providing a functional home for small indoor plants.',
     material: 'Wood-fill PLA',
     price: 2499,
-    image: '/products/planter.jpg',
+    image: '/products/planter.png',
     imageColor: 'from-[#11998e] to-[#38ef7d]',
     type: 'Home Decor',
     specs: {
@@ -117,6 +117,7 @@ export default function ProductPage() {
   const [product, setProduct] = useState(null);
   const [addedToCart, setAddedToCart] = useState(false);
   const [imageHovered, setImageHovered] = useState(false);
+  const [zoom, setZoom] = useState({ x: 0, y: 0 });
   const addDirectItemToCart = useStore((state) => state.addDirectItemToCart);
   const openCart = useStore((state) => state.openCart);
 
@@ -136,6 +137,16 @@ export default function ProductPage() {
       openCart();
       setTimeout(() => setAddedToCart(false), 2000);
     }
+  };
+
+  const handleImageMouseMove = (e) => {
+    if (!e.currentTarget) return;
+    
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    
+    setZoom({ x, y });
   };
 
   if (!product) {
@@ -167,25 +178,29 @@ export default function ProductPage() {
         </button>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Product Image */}
-          <div className="flex items-center justify-center">
+          {/* Product Image with Zoom Preview */}
+          <div className="flex items-center justify-center relative overflow-visible">
             <div 
               onMouseEnter={() => setImageHovered(true)}
-              onMouseLeave={() => setImageHovered(false)}
-              className={`w-full h-96 rounded-2xl shadow-2xl relative overflow-hidden cursor-pointer transition-all duration-300 transform ${
-                imageHovered ? 'scale-110 -translate-y-4 shadow-2xl' : 'scale-100'
-              } ${product.image ? '' : `bg-gradient-to-br ${product.imageColor}`}`}
+              onMouseLeave={() => {
+                setImageHovered(false);
+                setZoom({ x: 0, y: 0 });
+              }}
+              onMouseMove={handleImageMouseMove}
+              className="w-full max-w-md h-96 rounded-2xl shadow-2xl relative overflow-hidden cursor-zoom-in bg-[#0a0a0b]"
             >
               {product.image ? (
                 <Image
                   src={product.image}
                   alt={product.name}
                   fill
-                  className="object-cover"
+                  className="object-cover w-full h-full"
+                  sizes="(max-width: 1024px) 100vw, 50vw"
                   priority
                 />
               ) : (
                 <>
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#ff7e5f] to-[#feb47b]" />
                   <div className="absolute inset-0 bg-black/10" />
                   <div className="absolute inset-0 flex items-center justify-center">
                     <span className="text-white/70 font-medium tracking-widest uppercase text-lg drop-shadow-lg">
@@ -194,7 +209,39 @@ export default function ProductPage() {
                   </div>
                 </>
               )}
+              
+              {!imageHovered && (
+                <div className="absolute inset-0 flex items-end justify-center pb-4">
+                  <span className="text-white/60 text-sm font-medium bg-black/40 px-4 py-2 rounded-full">
+                    Hover to zoom
+                  </span>
+                </div>
+              )}
             </div>
+
+            {/* Zoom Preview Panel - Larger and Better Aligned */}
+            {imageHovered && product.image && (
+              <div className="absolute top-0 rounded-2xl shadow-2xl overflow-hidden bg-[#0a0a0b] border-2 border-brand-orange pointer-events-none z-50 w-96 h-96"
+                style={{ left: 'calc(100% + 1.5rem)' }}
+              >
+                <Image
+                  src={product.image}
+                  alt={`${product.name} zoomed`}
+                  fill
+                  className="object-cover w-full h-full"
+                  style={{
+                    transform: 'scale(2.5)',
+                    transformOrigin: `${zoom.x}% ${zoom.y}%`,
+                    transition: 'transform 0.05s ease-out'
+                  }}
+                  sizes="384px"
+                />
+                {/* Zoom level indicator */}
+                <div className="absolute top-4 right-4 bg-black/70 text-white text-sm font-bold px-4 py-2 rounded-full border-2 border-brand-orange">
+                  2.5x
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Product Details */}
@@ -289,7 +336,8 @@ export default function ProductPage() {
                         src={p.image}
                         alt={p.name}
                         fill
-                        className="object-cover"
+                        className="object-cover w-full h-full"
+                        sizes="(max-width: 768px) 100vw, 33vw"
                       />
                     ) : (
                       <div className="absolute inset-0 bg-black/20" />

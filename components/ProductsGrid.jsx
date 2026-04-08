@@ -14,7 +14,7 @@ const MOCK_PRODUCTS = [
     description: 'A fully flexible printed dragon with stunning details.',
     material: 'Silk',
     price: 1599,
-    image: '/products/dragon.jpg',
+    image: '/products/dragon.png',
     imageColor: 'from-[#ff7e5f] to-[#feb47b]',
     type: 'Collectible'
   },
@@ -24,7 +24,7 @@ const MOCK_PRODUCTS = [
     description: 'Sleek geometric design to keep your desk organized.',
     material: 'Matte PETG',
     price: 999,
-    image: '/products/headphone-stand.jpg',
+    image: '/products/headphone-stand.png',
     imageColor: 'from-[#2193b0] to-[#6dd5ed]',
     type: 'Desk Accessory'
   },
@@ -34,7 +34,7 @@ const MOCK_PRODUCTS = [
     description: 'Mathematical topological surface designed for indoor plants.',
     material: 'Wood-fill PLA',
     price: 2499,
-    image: '/products/planter.jpg',
+    image: '/products/planter.png',
     imageColor: 'from-[#11998e] to-[#38ef7d]',
     type: 'Home Decor'
   },
@@ -121,23 +121,24 @@ export default function ProductsGrid() {
             <Link href={`/products/${product.id}`}>
               <div className="bg-[#1a1a1b]/80 backdrop-blur-xl border border-white/5 rounded-2xl overflow-hidden hover:border-[rgba(249,115,22,0.3)] transition-all group flex flex-col h-full cursor-pointer transform hover:scale-105">
                 {/* Product Image */}
-                <div className={`w-full h-48 relative opacity-80 group-hover:opacity-100 transition-opacity ${product.image ? '' : `bg-gradient-to-br ${product.imageColor}`}`}>
+                <div className="w-full h-48 relative opacity-80 group-hover:opacity-100 transition-opacity bg-[#1a1a1b] overflow-hidden">
                    {product.image ? (
                      <Image
                        src={product.image}
                        alt={product.name}
                        fill
-                       className="object-cover"
+                       className="object-cover w-full h-full"
+                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                      />
                    ) : (
-                     <>
+                     <div className={`w-full h-full bg-gradient-to-br ${product.imageColor}`}>
                        <div className="absolute inset-0 bg-black/20" />
                        <div className="absolute inset-0 flex items-center justify-center">
                          <span className="text-white/80 font-medium tracking-widest uppercase text-sm drop-shadow-md">
                            3D Model
                          </span>
                        </div>
-                     </>
+                     </div>
                    )}
                 </div>
                 

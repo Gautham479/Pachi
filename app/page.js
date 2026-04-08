@@ -1,4 +1,7 @@
+"use client";
+
 import React from 'react';
+import { useSearchParams } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
 import MainContentTabs from '@/components/MainContentTabs';
@@ -9,6 +12,21 @@ import Footer from '@/components/Footer';
 import CartDrawer from '@/components/CartDrawer';
 
 export default function Home() {
+  const searchParams = useSearchParams();
+  const section = searchParams.get('section');
+
+  React.useEffect(() => {
+    if (section) {
+      setTimeout(() => {
+        const el = document.getElementById(section);
+        if (el) {
+          const y = el.getBoundingClientRect().top + window.scrollY - 80;
+          window.scrollTo({ top: y, behavior: 'smooth' });
+        }
+      }, 100);
+    }
+  }, [section]);
+
   return (
     <div className="flex flex-col min-h-screen bg-surface-bg items-center relative">
       <Navbar />
