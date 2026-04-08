@@ -51,6 +51,10 @@ export const useStore = create((set) => ({
       mockPrice: null
     };
   }),
+
+  addDirectItemToCart: (item) => set((state) => ({
+    cart: [...state.cart, { id: Math.random().toString(36).substr(2, 9), ...item }]
+  })),
 }));
 
 // A simple mock pricing calculator based on selections
