@@ -1,10 +1,12 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Rocket, ShoppingCart, Moon } from 'lucide-react';
 import { useStore } from '../store/useStore';
 
 export default function Navbar() {
+  const router = useRouter();
   const [activeSection, setActiveSection] = useState('quote');
   const cart = useStore((state) => state.cart);
   const openCart = useStore((state) => state.openCart);
@@ -39,6 +41,10 @@ export default function Navbar() {
     }
   };
 
+  const goToHome = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <nav className="w-full bg-surface-bg sticky top-0 z-50 border-b border-surface-border/50">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
@@ -47,7 +53,7 @@ export default function Navbar() {
               {/* Logo */}
               <div 
                 className="flex items-center gap-2 cursor-pointer"
-                onClick={() => scrollTo('quote')}
+                onClick={goToHome}
               >
                 <span className="text-2xl">🖨️</span>
                 <span className="font-bold text-xl tracking-tight text-white">
