@@ -5,7 +5,7 @@ export default function Features() {
   const features = [
     {
       icon: <Clock className="w-8 h-8 text-primary-500" />,
-      title: "Fast Turnaround",
+      title: "PET(Polyethylene Terephthalate) Printing",
       desc: "Get your parts shipped within 24-48 hours with our priority printing service."
     },
     {
