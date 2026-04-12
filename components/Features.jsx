@@ -69,11 +69,11 @@ export default function Features() {
   };
 
   return (
-    <section id="features" className="w-full py-24 bg-surface-card/20">
+    <section id="features" className="w-full py-24 bg-gray-50">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-4">Materials – Choose What Fits Your Use</h2>
-          <p className="text-lg text-[#8B8581] max-w-2xl mx-auto">
+          <h2 className="text-3xl md:text-5xl font-extrabold text-black mb-4">Materials – Choose What Fits Your Use</h2>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Select the right material for your project based on your specific needs
           </p>
         </div>
@@ -81,8 +81,8 @@ export default function Features() {
         {/* Materials Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
           {materials.map((material, i) => (
-            <div key={i} className="bg-surface-card border border-surface-border p-8 rounded-2xl shadow-lg hover:border-primary-500/50 transition-colors">
-              <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+            <div key={i} className="bg-white border border-gray-300 p-8 rounded-2xl shadow-lg hover:border-gray-400 transition-colors">
+              <h3 className="text-xl font-bold text-black mb-6 flex items-center gap-2">
                 <span className="text-2xl">{material.emoji}</span>
                 {material.name}
               </h3>
@@ -90,7 +90,7 @@ export default function Features() {
                 {material.points.map((point, j) => (
                   <li key={j} className="flex gap-3 items-start">
                     {getIcon(point.type)}
-                    <span className={`text-[#DCD1CC] leading-relaxed ${
+                    <span className={`text-gray-700 leading-relaxed ${
                       point.type === "negative" ? "opacity-75" : ""
                     }`}>
                       {point.text}
@@ -103,13 +103,13 @@ export default function Features() {
         </div>
 
         {/* Quick Guide */}
-        <div className="bg-surface-card border border-surface-border p-8 rounded-2xl shadow-lg">
-          <h3 className="text-2xl font-bold text-white mb-6">💡 Quick Guide</h3>
+        <div className="bg-white border border-gray-300 p-8 rounded-2xl shadow-lg">
+          <h3 className="text-2xl font-bold text-black mb-6">💡 Quick Guide</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             {quickGuide.map((item, i) => (
-              <div key={i} className="bg-surface-bg/50 p-4 rounded-lg border border-surface-border">
-                <p className="text-sm font-semibold text-primary-500 mb-2">{item.question}</p>
-                <p className="text-[#DCD1CC]">{item.answer}</p>
+              <div key={i} className="bg-gray-100 p-4 rounded-lg border border-gray-300">
+                <p className="text-sm font-semibold text-gray-900 mb-2">{item.question}</p>
+                <p className="text-gray-700">{item.answer}</p>
               </div>
             ))}
           </div>
