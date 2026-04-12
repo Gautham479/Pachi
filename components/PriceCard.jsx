@@ -13,12 +13,12 @@ export default function PriceCard() {
         <div className="flex flex-col items-center justify-center p-8 bg-surface-bg rounded-xl border border-surface-border text-center mb-6 min-h-[160px] transition-all">
           {selectedFile ? (
             <div className="animate-in fade-in zoom-in duration-300">
-              <p className="text-sm text-slate-400 font-medium tracking-wide uppercase mb-2">Estimated Price</p>
-              <h2 className="text-4xl sm:text-5xl font-black text-gray-900 tracking-tight">
+              <p className="text-sm text-fg-subtle font-medium tracking-wide uppercase mb-2">Estimated Price</p>
+              <h2 className="text-4xl sm:text-5xl font-black text-fg tracking-tight">
                 <span className="text-primary-500 mr-1">₹</span>{mockPrice}
               </h2>
-              <p className="text-xs text-accent-500 mt-3 flex items-center justify-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-accent-500"></span>
+              <p className="text-xs text-primary-500 mt-3 flex items-center justify-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-primary-500"></span>
                 Includes material & processing
               </p>
             </div>
@@ -27,8 +27,8 @@ export default function PriceCard() {
               <div className="w-12 h-12 bg-primary-500/10 text-primary-500 rounded-full flex items-center justify-center mb-4">
                 <UploadCloud size={24} />
               </div>
-              <p className="text-gray-700 font-medium">Upload your model to see price</p>
-              <p className="text-sm text-gray-600 mt-1">Instant pricing, no signup needed</p>
+              <p className="text-fg-muted font-medium">Upload your model to see price</p>
+              <p className="text-sm text-fg-subtle mt-1">Instant pricing, no signup needed</p>
             </div>
           )}
         </div>
@@ -38,8 +38,8 @@ export default function PriceCard() {
             disabled={!selectedFile}
             className={`flex items-center justify-center gap-2 py-4 px-6 rounded-xl font-bold transition-all
               ${selectedFile 
-                ? 'bg-primary-500 text-white hover:bg-primary-600 hover:shadow-lg hover:shadow-primary-500/25 active:scale-95' 
-                : 'bg-surface-border text-slate-400 cursor-not-allowed'
+                ? 'bg-cta text-cta-contrast hover:opacity-90 hover:shadow-lg shadow-black/10 dark:shadow-black/40 active:scale-95' 
+                : 'bg-surface-border text-fg-subtle cursor-not-allowed'
               }
             `}
           >
@@ -50,8 +50,8 @@ export default function PriceCard() {
             disabled={!selectedFile}
             className={`py-4 px-6 rounded-xl font-bold transition-all
               ${selectedFile 
-                ? 'bg-surface-bg border border-surface-border text-white hover:border-primary-500 hover:text-primary-500 active:scale-95' 
-                : 'bg-surface-bg border border-surface-border/50 text-slate-500 cursor-not-allowed'
+                ? 'bg-surface-muted border border-surface-border text-fg hover:border-primary-500 hover:text-primary-500 active:scale-95' 
+                : 'bg-surface-muted border border-surface-border/50 text-fg-subtle cursor-not-allowed'
               }
             `}
           >

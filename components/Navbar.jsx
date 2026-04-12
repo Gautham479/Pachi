@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Rocket, ShoppingCart, Moon } from 'lucide-react';
+import { Rocket, ShoppingCart } from 'lucide-react';
 import { useStore } from '../store/useStore';
+import ThemeToggle from './ThemeToggle';
 
 export default function Navbar() {
   const router = useRouter();
@@ -58,7 +59,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="w-full bg-surface-bg sticky top-0 z-50 border-b border-surface-border/50">
+    <nav className="w-full bg-surface-bg/95 backdrop-blur-md sticky top-0 z-50 border-b border-surface-border/60">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-8">
@@ -68,31 +69,32 @@ export default function Navbar() {
                 onClick={goToHome}
               >
                 <span className="text-2xl">🖨️</span>
-                <span className="font-bold text-xl tracking-tight text-gray-900">
-                  Pachi <span className="text-gray-900">3D</span>
+                <span className="font-bold text-xl tracking-tight text-fg">
+                  Pachi <span className="text-fg">3D</span>
                 </span>
               </div>
               
               {/* Links */}
-              <div className="hidden lg:flex items-center gap-6 text-sm font-semibold text-gray-700">
-                <button onClick={() => scrollTo('features')} className={`transition-colors ${activeSection === 'features' ? 'text-primary-500' : 'hover:text-gray-900'}`}>Features</button>
-                <button onClick={() => scrollTo('how-it-works')} className={`transition-colors ${activeSection === 'how-it-works' ? 'text-primary-500' : 'hover:text-gray-900'}`}>How It Works</button>
-                <button onClick={() => scrollTo('faq')} className={`transition-colors ${activeSection === 'faq' ? 'text-primary-500' : 'hover:text-gray-900'}`}>FAQ</button>
+              <div className="hidden lg:flex items-center gap-6 text-sm font-semibold text-fg-muted">
+                <button onClick={() => scrollTo('features')} className={`transition-colors ${activeSection === 'features' ? 'text-primary-500' : 'hover:text-fg'}`}>Features</button>
+                <button onClick={() => scrollTo('how-it-works')} className={`transition-colors ${activeSection === 'how-it-works' ? 'text-primary-500' : 'hover:text-fg'}`}>How It Works</button>
+                <button onClick={() => scrollTo('faq')} className={`transition-colors ${activeSection === 'faq' ? 'text-primary-500' : 'hover:text-fg'}`}>FAQ</button>
               </div>
             </div>
 
             {/* Right Actions */}
-            <div className="flex items-center gap-5">
+            <div className="flex items-center gap-3 sm:gap-5">
+              <ThemeToggle />
               <div 
-                className="relative cursor-pointer hover:text-gray-900 transition-colors"
+                className="relative cursor-pointer hover:text-fg transition-colors"
                 onClick={openCart}
               >
-                <ShoppingCart className="w-5 h-5 text-gray-700" />
-                <span className="absolute -top-1.5 -right-1.5 bg-primary-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">{cart.length}</span>
+                <ShoppingCart className="w-5 h-5 text-fg-muted" />
+                <span className="absolute -top-1.5 -right-1.5 bg-cta text-cta-contrast text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">{cart.length}</span>
               </div>
               <button 
                 onClick={() => scrollTo('quote')}
-                className="bg-primary-500 hover:bg-primary-600 text-white font-bold px-5 py-2 rounded-full flex items-center gap-2 text-sm transition-all transform active:scale-95 shadow-lg shadow-primary-500/20"
+                className="bg-cta hover:opacity-90 text-cta-contrast font-bold px-5 py-2 rounded-full flex items-center gap-2 text-sm transition-all transform active:scale-95 shadow-lg shadow-black/10 dark:shadow-black/40"
               >
                 <Rocket className="w-4 h-4" /> Get Quote
               </button>

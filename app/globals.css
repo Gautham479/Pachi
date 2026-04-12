@@ -1,27 +1,83 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Light: clean white / cool grey. Dark: full zinc grey scale, no mixed palettes */
+:root {
+  --app-surface-bg: #f4f4f5;
+  --app-surface-card: #ffffff;
+  --app-surface-muted: #e4e4e7;
+  --app-surface-border: #d4d4d8;
+  --app-fg: #18181b;
+  --app-fg-muted: #52525b;
+  --app-fg-subtle: #71717a;
+  --app-primary-50: #fafafa;
+  --app-primary-100: #f4f4f5;
+  --app-primary-500: #52525b;
+  --app-primary-600: #3f3f46;
+  --app-primary-900: #18181b;
+  --app-accent-400: #71717a;
+  --app-accent-500: #52525b;
+  --app-accent-600: #3f3f46;
+  --app-cta: #27272a;
+  --app-cta-contrast: #fafafa;
+  --app-banner: #52525b;
+  --app-overlay: rgba(24, 24, 27, 0.45);
+}
+
+.dark {
+  --app-surface-bg: #09090b;
+  --app-surface-card: #18181b;
+  --app-surface-muted: #27272a;
+  --app-surface-border: #3f3f46;
+  --app-fg: #fafafa;
+  --app-fg-muted: #a1a1aa;
+  --app-fg-subtle: #71717a;
+  --app-primary-50: #27272a;
+  --app-primary-100: #3f3f46;
+  --app-primary-500: #d4d4d8;
+  --app-primary-600: #e4e4e7;
+  --app-primary-900: #fafafa;
+  --app-accent-400: #a1a1aa;
+  --app-accent-500: #d4d4d8;
+  --app-accent-600: #e4e4e7;
+  --app-cta: #e4e4e7;
+  --app-cta-contrast: #18181b;
+  --app-banner: #a1a1aa;
+  --app-overlay: rgba(9, 9, 11, 0.65);
+}
+
 @theme {
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  
-  --color-primary-50: #f9fafb;
-  --color-primary-100: #f3f4f6;
-  --color-primary-500: #6b7280; /* Neutral Grey */
-  --color-primary-600: #4b5563;
-  --color-primary-900: #1f2937;
-  
-  --color-accent-400: #10b981; /* Emerald */
-  --color-accent-500: #059669;
-  --color-accent-600: #047857;
-  
-  --color-surface-bg: #f9fafb; /* Light Grey - Background */
-  --color-surface-card: #ffffff; /* White - Cards */
-  --color-surface-border: #e5e7eb; /* Light Grey - Borders */
-  
-  --color-promo-banner: #6b7280;
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+
+  --color-fg: var(--app-fg);
+  --color-fg-muted: var(--app-fg-muted);
+  --color-fg-subtle: var(--app-fg-subtle);
+  --color-surface-bg: var(--app-surface-bg);
+  --color-surface-card: var(--app-surface-card);
+  --color-surface-muted: var(--app-surface-muted);
+  --color-surface-border: var(--app-surface-border);
+  --color-overlay: var(--app-overlay);
+
+  --color-primary-50: var(--app-primary-50);
+  --color-primary-100: var(--app-primary-100);
+  --color-primary-500: var(--app-primary-500);
+  --color-primary-600: var(--app-primary-600);
+  --color-primary-900: var(--app-primary-900);
+
+  --color-accent-400: var(--app-accent-400);
+  --color-accent-500: var(--app-accent-500);
+  --color-accent-600: var(--app-accent-600);
+
+  --color-cta: var(--app-cta);
+  --color-cta-contrast: var(--app-cta-contrast);
+  --color-brand-orange: var(--app-cta);
+
+  --color-promo-banner: var(--app-banner);
 }
 
 @layer base {
   body {
-    @apply bg-[var(--color-surface-bg)] text-gray-900 antialiased font-sans;
+    @apply bg-surface-bg text-fg antialiased font-sans;
   }
 }

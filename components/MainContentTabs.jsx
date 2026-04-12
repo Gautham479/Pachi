@@ -14,17 +14,17 @@ export default function MainContentTabs() {
     <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 mb-24 flex flex-col items-center">
       
       {/* Sleek Segmented Control */}
-      <div className="bg-[#1a1a1b]/60 backdrop-blur-xl border border-white/5 p-1.5 rounded-2xl flex items-center mb-10 mx-auto sticky top-[90px] z-40">
+      <div className="bg-surface-muted/90 dark:bg-surface-card/80 backdrop-blur-xl border border-surface-border p-1.5 rounded-2xl flex items-center mb-10 mx-auto sticky top-[90px] z-40 shadow-sm">
         <button
           onClick={() => setActiveTab('products')}
           className={`relative px-6 py-2.5 rounded-xl text-sm font-medium transition-colors flex items-center justify-center gap-2 min-w-[160px] ${
-            activeTab === 'products' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'
+            activeTab === 'products' ? 'text-fg' : 'text-fg-muted hover:text-fg'
           }`}
         >
           {activeTab === 'products' && (
             <motion.div
               layoutId="activeTabIndicator"
-              className="absolute inset-0 bg-white/10 border border-white/10 rounded-xl"
+              className="absolute inset-0 bg-surface-card border border-surface-border rounded-xl shadow-sm"
               initial={false}
               transition={{ type: 'spring', stiffness: 400, damping: 30 }}
             />
@@ -36,13 +36,13 @@ export default function MainContentTabs() {
         <button
           onClick={() => setActiveTab('custom')}
           className={`relative px-6 py-2.5 rounded-xl text-sm font-medium transition-colors flex items-center justify-center gap-2 min-w-[160px] ${
-            activeTab === 'custom' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'
+            activeTab === 'custom' ? 'text-fg' : 'text-fg-muted hover:text-fg'
           }`}
         >
           {activeTab === 'custom' && (
             <motion.div
               layoutId="activeTabIndicator"
-              className="absolute inset-0 bg-white/10 border border-white/10 rounded-xl"
+              className="absolute inset-0 bg-surface-card border border-surface-border rounded-xl shadow-sm"
               initial={false}
               transition={{ type: 'spring', stiffness: 400, damping: 30 }}
             />
@@ -65,9 +65,9 @@ export default function MainContentTabs() {
               className="w-full"
             >
               <div className="text-center max-w-2xl mx-auto mb-10">
-                <h2 className="text-3xl font-bold text-white mb-4">Print Shop</h2>
-                <div className="h-1 w-20 bg-gradient-to-r from-brand-orange to-[rgba(249,115,22,0.3)] mx-auto rounded-full mb-4"></div>
-                <p className="text-white/60">
+                <h2 className="text-3xl font-bold text-fg mb-4">Print Shop</h2>
+                <div className="h-1 w-20 bg-gradient-to-r from-cta to-cta/40 mx-auto rounded-full mb-4"></div>
+                <p className="text-fg-muted">
                   Browse our curated selection of high-quality 3D printed products and accessories, ready to ship.
                 </p>
               </div>
@@ -83,9 +83,9 @@ export default function MainContentTabs() {
               className="w-full"
             >
               <div className="text-center max-w-2xl mx-auto mb-10">
-                <h2 className="text-3xl font-bold text-white mb-4">Custom Orders</h2>
-                <div className="h-1 w-20 bg-gradient-to-r from-brand-orange to-[rgba(249,115,22,0.3)] mx-auto rounded-full mb-4"></div>
-                <p className="text-white/60">
+                <h2 className="text-3xl font-bold text-fg mb-4">Custom Orders</h2>
+                <div className="h-1 w-20 bg-gradient-to-r from-cta to-cta/40 mx-auto rounded-full mb-4"></div>
+                <p className="text-fg-muted">
                   Upload your own 3D models (STL files), configure your material preferences, and get an instant quote.
                 </p>
               </div>

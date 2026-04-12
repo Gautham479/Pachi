@@ -58,22 +58,22 @@ export default function Features() {
   const getIcon = (type) => {
     switch(type) {
       case "positive":
-        return <Check className="w-4 h-4 text-green-500 flex-shrink-0" />;
+        return <Check className="w-4 h-4 text-primary-500 flex-shrink-0" />;
       case "negative":
-        return <X className="w-4 h-4 text-red-500 flex-shrink-0" />;
+        return <X className="w-4 h-4 text-fg-subtle flex-shrink-0" />;
       case "tip":
-        return <Zap className="w-4 h-4 text-yellow-500 flex-shrink-0" />;
+        return <Zap className="w-4 h-4 text-primary-600 flex-shrink-0" />;
       default:
         return null;
     }
   };
 
   return (
-    <section id="features" className="w-full py-24 bg-gray-50">
+    <section id="features" className="w-full py-24 bg-surface-muted/50">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-5xl font-extrabold text-black mb-4">Materials – Choose What Fits Your Use</h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <h2 className="text-3xl md:text-5xl font-extrabold text-fg mb-4">Materials – Choose What Fits Your Use</h2>
+          <p className="text-lg text-fg-muted max-w-2xl mx-auto">
             Select the right material for your project based on your specific needs
           </p>
         </div>
@@ -81,8 +81,8 @@ export default function Features() {
         {/* Materials Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
           {materials.map((material, i) => (
-            <div key={i} className="bg-white border border-gray-300 p-8 rounded-2xl shadow-lg hover:border-gray-400 transition-colors">
-              <h3 className="text-xl font-bold text-black mb-6 flex items-center gap-2">
+            <div key={i} className="bg-surface-card border border-surface-border p-8 rounded-2xl shadow-sm hover:border-primary-500/30 transition-colors">
+              <h3 className="text-xl font-bold text-fg mb-6 flex items-center gap-2">
                 <span className="text-2xl">{material.emoji}</span>
                 {material.name}
               </h3>
@@ -90,7 +90,7 @@ export default function Features() {
                 {material.points.map((point, j) => (
                   <li key={j} className="flex gap-3 items-start">
                     {getIcon(point.type)}
-                    <span className={`text-gray-700 leading-relaxed ${
+                    <span className={`text-fg-muted leading-relaxed ${
                       point.type === "negative" ? "opacity-75" : ""
                     }`}>
                       {point.text}
@@ -103,13 +103,13 @@ export default function Features() {
         </div>
 
         {/* Quick Guide */}
-        <div className="bg-white border border-gray-300 p-8 rounded-2xl shadow-lg">
-          <h3 className="text-2xl font-bold text-black mb-6">💡 Quick Guide</h3>
+        <div className="bg-surface-card border border-surface-border p-8 rounded-2xl shadow-sm">
+          <h3 className="text-2xl font-bold text-fg mb-6">💡 Quick Guide</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             {quickGuide.map((item, i) => (
-              <div key={i} className="bg-gray-100 p-4 rounded-lg border border-gray-300">
-                <p className="text-sm font-semibold text-gray-900 mb-2">{item.question}</p>
-                <p className="text-gray-700">{item.answer}</p>
+              <div key={i} className="bg-surface-muted p-4 rounded-lg border border-surface-border">
+                <p className="text-sm font-semibold text-fg mb-2">{item.question}</p>
+                <p className="text-fg-muted">{item.answer}</p>
               </div>
             ))}
           </div>

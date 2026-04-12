@@ -25,7 +25,7 @@ export default function UploadBox() {
 
   return (
     <div className="flex flex-col h-full bg-surface-card rounded-2xl border border-surface-border p-6 shadow-xl relative min-h-[400px]">
-      <div className="flex items-center gap-2 mb-4 text-gray-900 font-bold pb-2">
+      <div className="flex items-center gap-2 mb-4 text-fg font-bold pb-2">
         <Upload className="w-5 h-5 text-primary-500" />
         <span>Upload Model</span>
       </div>
@@ -40,12 +40,12 @@ export default function UploadBox() {
         
         {selectedFile ? (
           <div className="flex flex-col items-center text-center space-y-4">
-            <div className="w-20 h-20 bg-accent-500/20 text-accent-500 rounded-full flex items-center justify-center mb-2">
+            <div className="w-20 h-20 bg-primary-500/15 text-primary-500 rounded-full flex items-center justify-center mb-2">
               <CheckCircle size={40} />
             </div>
             <div>
-              <p className="text-gray-900 font-bold text-xl">{selectedFile.name}</p>
-              <p className="text-sm text-gray-700 mt-2">{(selectedFile.size / 1024 / 1024).toFixed(2)} MB</p>
+              <p className="text-fg font-bold text-xl">{selectedFile.name}</p>
+              <p className="text-sm text-fg-muted mt-2">{(selectedFile.size / 1024 / 1024).toFixed(2)} MB</p>
             </div>
             <p className="text-sm text-primary-500 mt-4 font-bold tracking-wide">Click or drag here to upload a different file</p>
           </div>
@@ -55,11 +55,11 @@ export default function UploadBox() {
               <Upload size={36} />
             </div>
             <div>
-              <h3 className="text-2xl font-extrabold text-gray-900 tracking-wide">Drop Your STL File Here</h3>
-              <p className="text-base text-gray-600 mt-3">or click to browse files</p>
-              <p className="text-xs text-gray-600 mt-3 uppercase tracking-wider font-bold">STL files only, up to 100MB</p>
+              <h3 className="text-2xl font-extrabold text-fg tracking-wide">Drop Your STL File Here</h3>
+              <p className="text-base text-fg-muted mt-3">or click to browse files</p>
+              <p className="text-xs text-fg-muted mt-3 uppercase tracking-wider font-bold">STL files only, up to 100MB</p>
             </div>
-            <p className="text-sm text-gray-600 mt-6 font-medium">1000+ models quoted this month</p>
+            <p className="text-sm text-fg-subtle mt-6 font-medium">1000+ models quoted this month</p>
           </div>
         )}
       </div>

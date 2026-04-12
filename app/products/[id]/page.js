@@ -155,7 +155,7 @@ export default function ProductPage() {
         <Navbar />
         <CartDrawer />
         <div className="flex-1 flex items-center justify-center">
-          <p className="text-white/60">Loading product...</p>
+          <p className="text-fg-muted">Loading product...</p>
         </div>
         <Footer />
       </div>
@@ -171,7 +171,7 @@ export default function ProductPage() {
         {/* Back Button */}
         <button
           onClick={() => router.back()}
-          className="flex items-center gap-2 text-white/60 hover:text-white transition-colors mb-8"
+          className="flex items-center gap-2 text-fg-muted hover:text-fg transition-colors mb-8"
         >
           <ArrowLeft className="w-5 h-5" />
           Back to Products
@@ -187,7 +187,7 @@ export default function ProductPage() {
                 setZoom({ x: 0, y: 0 });
               }}
               onMouseMove={handleImageMouseMove}
-              className="w-full max-w-md h-96 rounded-2xl shadow-2xl relative overflow-hidden cursor-zoom-in bg-[#0a0a0b]"
+              className="w-full max-w-md h-96 rounded-2xl shadow-2xl relative overflow-hidden cursor-zoom-in bg-surface-muted"
             >
               {product.image ? (
                 <Image
@@ -221,7 +221,7 @@ export default function ProductPage() {
 
             {/* Zoom Preview Panel - Larger and Better Aligned */}
             {imageHovered && product.image && (
-              <div className="absolute top-0 rounded-2xl shadow-2xl overflow-hidden bg-[#0a0a0b] border-2 border-brand-orange pointer-events-none z-50 w-96 h-96"
+              <div className="absolute top-0 rounded-2xl shadow-2xl overflow-hidden bg-surface-muted border-2 border-cta pointer-events-none z-50 w-96 h-96"
                 style={{ left: 'calc(100% + 1.5rem)' }}
               >
                 <Image
@@ -237,7 +237,7 @@ export default function ProductPage() {
                   sizes="384px"
                 />
                 {/* Zoom level indicator */}
-                <div className="absolute top-4 right-4 bg-black/70 text-white text-sm font-bold px-4 py-2 rounded-full border-2 border-brand-orange">
+                <div className="absolute top-4 right-4 bg-surface-card/95 text-fg text-sm font-bold px-4 py-2 rounded-full border-2 border-cta shadow-lg">
                   2.5x
                 </div>
               </div>
@@ -249,57 +249,57 @@ export default function ProductPage() {
             <div>
               <div className="mb-6">
                 <div className="flex items-center gap-3 mb-3">
-                  <span className="px-3 py-1 bg-brand-orange/20 text-brand-orange rounded-full text-sm font-medium">
+                  <span className="px-3 py-1 bg-surface-muted text-primary-600 rounded-full text-sm font-medium border border-surface-border">
                     {product.type}
                   </span>
                 </div>
-                <h1 className="text-4xl font-bold text-white mb-3">{product.name}</h1>
-                <p className="text-white/70 text-lg mb-6">{product.fullDescription}</p>
+                <h1 className="text-4xl font-bold text-fg mb-3">{product.name}</h1>
+                <p className="text-fg-muted text-lg mb-6">{product.fullDescription}</p>
               </div>
 
               {/* Specs */}
-              <div className="bg-white/5 rounded-xl p-6 mb-8 border border-white/10">
-                <h3 className="text-white font-semibold mb-4">Specifications</h3>
+              <div className="bg-surface-muted rounded-xl p-6 mb-8 border border-surface-border">
+                <h3 className="text-fg font-semibold mb-4">Specifications</h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-white/50 text-sm">Dimensions</p>
-                    <p className="text-white font-medium">{product.specs.dimensions}</p>
+                    <p className="text-fg-subtle text-sm">Dimensions</p>
+                    <p className="text-fg font-medium">{product.specs.dimensions}</p>
                   </div>
                   <div>
-                    <p className="text-white/50 text-sm">Weight</p>
-                    <p className="text-white font-medium">{product.specs.weight}</p>
+                    <p className="text-fg-subtle text-sm">Weight</p>
+                    <p className="text-fg font-medium">{product.specs.weight}</p>
                   </div>
                   <div>
-                    <p className="text-white/50 text-sm">Print Time</p>
-                    <p className="text-white font-medium">{product.specs.printTime}</p>
+                    <p className="text-fg-subtle text-sm">Print Time</p>
+                    <p className="text-fg font-medium">{product.specs.printTime}</p>
                   </div>
                   <div>
-                    <p className="text-white/50 text-sm">Material</p>
-                    <p className="text-white font-medium">{product.specs.material}</p>
+                    <p className="text-fg-subtle text-sm">Material</p>
+                    <p className="text-fg font-medium">{product.specs.material}</p>
                   </div>
                 </div>
               </div>
 
               {/* Material Info */}
               <div className="mb-8">
-                <p className="text-white/60 text-sm mb-2">Material</p>
-                <p className="text-2xl font-bold text-white">{product.material}</p>
+                <p className="text-fg-muted text-sm mb-2">Material</p>
+                <p className="text-2xl font-bold text-fg">{product.material}</p>
               </div>
             </div>
 
             {/* Price & Action */}
             <div>
               <div className="mb-6">
-                <p className="text-white/60 text-sm mb-2">Price</p>
-                <p className="text-5xl font-bold text-brand-orange">₹{product.price}</p>
+                <p className="text-fg-muted text-sm mb-2">Price</p>
+                <p className="text-5xl font-bold text-primary-600">₹{product.price}</p>
               </div>
 
               <button
                 onClick={handleAddToCart}
                 className={`w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-3 transition-all ${
                   addedToCart
-                    ? 'bg-green-500/20 text-green-400 border border-green-500/50'
-                    : 'bg-brand-orange hover:bg-brand-orange/90 text-white border border-brand-orange shadow-lg shadow-brand-orange/30'
+                    ? 'bg-surface-muted text-fg border border-primary-500/40'
+                    : 'bg-cta hover:opacity-90 text-cta-contrast border border-cta shadow-lg shadow-black/10 dark:shadow-black/40'
                 }`}
               >
                 {addedToCart ? (
@@ -319,8 +319,8 @@ export default function ProductPage() {
         </div>
 
         {/* Related Products Section */}
-        <div className="mt-16 pt-12 border-t border-white/10">
-          <h2 className="text-2xl font-bold text-white mb-8">Other Products</h2>
+        <div className="mt-16 pt-12 border-t border-surface-border">
+          <h2 className="text-2xl font-bold text-fg mb-8">Other Products</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {MOCK_PRODUCTS.filter((p) => p.id !== product.id)
               .slice(0, 3)
@@ -328,7 +328,7 @@ export default function ProductPage() {
                 <div
                   key={p.id}
                   onClick={() => router.push(`/products/${p.id}`)}
-                  className="bg-[#1a1a1b]/80 backdrop-blur-xl border border-white/5 rounded-2xl overflow-hidden hover:border-[rgba(249,115,22,0.3)] transition-all cursor-pointer group"
+                  className="bg-surface-card border border-surface-border rounded-2xl overflow-hidden hover:border-primary-500/30 transition-all cursor-pointer group shadow-sm"
                 >
                   <div className={`w-full h-40 relative opacity-80 group-hover:opacity-100 transition-opacity ${p.image ? '' : `bg-gradient-to-br ${p.imageColor}`}`}>
                     {p.image ? (
@@ -344,8 +344,8 @@ export default function ProductPage() {
                     )}
                   </div>
                   <div className="p-4">
-                    <h3 className="text-white font-medium text-sm mb-1">{p.name}</h3>
-                    <p className="text-brand-orange font-bold">₹{p.price}</p>
+                    <h3 className="text-fg font-medium text-sm mb-1">{p.name}</h3>
+                    <p className="text-primary-600 font-bold">₹{p.price}</p>
                   </div>
                 </div>
               ))}
