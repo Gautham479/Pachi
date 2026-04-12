@@ -119,22 +119,22 @@ export default function ProductsGrid() {
             className="flex flex-col"
           >
             <Link href={`/products/${product.id}`}>
-              <div className=\"bg-white border border-gray-300 rounded-2xl overflow-hidden hover:border-gray-400 transition-all group flex flex-col h-full cursor-pointer transform hover:scale-105\">
+              <div className="bg-white border border-gray-300 rounded-2xl overflow-hidden hover:border-gray-400 transition-all group flex flex-col h-full cursor-pointer transform hover:scale-105">
                 {/* Product Image */}
-                <div className=\"w-full h-48 relative opacity-90 group-hover:opacity-100 transition-opacity bg-gray-100 overflow-hidden\">
+                <div className="w-full h-48 relative opacity-90 group-hover:opacity-100 transition-opacity bg-gray-100 overflow-hidden">
                    {product.image ? (
                      <Image
                        src={product.image}
                        alt={product.name}
                        fill
-                       className=\"object-cover w-full h-full\"
-                       sizes=\"(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw\"
+                       className="object-cover w-full h-full"
+                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                      />
                    ) : (
                      <div className={`w-full h-full bg-gradient-to-br ${product.imageColor}`}>
-                       <div className=\"absolute inset-0 bg-white/10\" />
-                       <div className=\"absolute inset-0 flex items-center justify-center\">
-                         <span className=\"text-gray-600 font-medium tracking-widest uppercase text-sm drop-shadow-md\">
+                       <div className="absolute inset-0 bg-white/10" />
+                       <div className="absolute inset-0 flex items-center justify-center">
+                         <span className="text-gray-600 font-medium tracking-widest uppercase text-sm drop-shadow-md">
                            3D Model
                          </span>
                        </div>
@@ -142,19 +142,19 @@ export default function ProductsGrid() {
                    )}
                 </div>
                 
-                <div className=\"p-5 flex flex-col flex-grow\">
-                  <div className=\"flex justify-between items-start mb-2\">
-                    <h3 className=\"text-gray-900 font-medium text-lg\">{product.name}</h3>
-                    <span className=\"text-brand-orange font-bold\">₹{product.price}</span>
+                <div className="p-5 flex flex-col flex-grow">
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="text-gray-900 font-medium text-lg">{product.name}</h3>
+                    <span className="text-brand-orange font-bold">₹{product.price}</span>
                   </div>
                   
-                  <p className=\"text-gray-600 text-sm mb-4 flex-grow\">{product.description}</p>
+                  <p className="text-gray-600 text-sm mb-4 flex-grow">{product.description}</p>
                   
-                  <div className=\"flex items-center gap-2 mb-6\">
-                    <span className=\"px-2 py-1 bg-gray-200 rounded text-xs text-gray-700 font-medium\">
+                  <div className="flex items-center gap-2 mb-6">
+                    <span className="px-2 py-1 bg-gray-200 rounded text-xs text-gray-700 font-medium">
                       {product.material}
                     </span>
-                    <span className=\"px-2 py-1 bg-gray-200 rounded text-xs text-gray-700 font-medium\">
+                    <span className="px-2 py-1 bg-gray-200 rounded text-xs text-gray-700 font-medium">
                       {product.type}
                     </span>
                   </div>
