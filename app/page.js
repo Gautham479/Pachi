@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
@@ -11,7 +11,7 @@ import FAQ from '@/components/FAQ';
 import Footer from '@/components/Footer';
 import CartDrawer from '@/components/CartDrawer';
 
-export default function Home() {
+function ScrollToSection() {
   const searchParams = useSearchParams();
   const section = searchParams.get('section');
 
@@ -27,10 +27,18 @@ export default function Home() {
     }
   }, [section]);
 
+  return null;
+}
+
+export default function Home() {
+
   return (
     <div className="flex flex-col min-h-screen bg-surface-bg items-center relative">
       <Navbar />
       <CartDrawer />
+      <Suspense fallback={null}>
+        <ScrollToSection />
+      </Suspense>
       
       {/* Hero Section */}
       <section id="hero" className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
