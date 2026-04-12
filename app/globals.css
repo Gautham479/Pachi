@@ -3,25 +3,25 @@
 @theme {
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   
-  --color-primary-50: #eff6ff;
-  --color-primary-100: #dbeafe;
-  --color-primary-500: #3b82f6; /* Professional True Blue */
-  --color-primary-600: #2563eb;
-  --color-primary-900: #1e3a8a;
+  --color-primary-50: #f9fafb;
+  --color-primary-100: #f3f4f6;
+  --color-primary-500: #6b7280; /* Neutral Grey */
+  --color-primary-600: #4b5563;
+  --color-primary-900: #1f2937;
   
   --color-accent-400: #10b981; /* Emerald */
   --color-accent-500: #059669;
   --color-accent-600: #047857;
   
-  --color-surface-bg: #020617; /* Slate 950 - Extremely professional dark blue-slate */
-  --color-surface-card: #0f172a; /* Slate 900 */
-  --color-surface-border: #1e293b; /* Slate 800 */
+  --color-surface-bg: #f9fafb; /* Light Grey - Background */
+  --color-surface-card: #ffffff; /* White - Cards */
+  --color-surface-border: #e5e7eb; /* Light Grey - Borders */
   
-  --color-promo-banner: #3b82f6;
+  --color-promo-banner: #6b7280;
 }
 
 @layer base {
   body {
-    @apply bg-[var(--color-surface-bg)] text-[#DCD1CC] antialiased font-sans;
+    @apply bg-[var(--color-surface-bg)] text-gray-900 antialiased font-sans;
   }
 }

@@ -25,7 +25,7 @@ export default function UploadBox() {
 
   return (
     <div className="flex flex-col h-full bg-surface-card rounded-2xl border border-surface-border p-6 shadow-xl relative min-h-[400px]">
-      <div className="flex items-center gap-2 mb-4 text-white font-bold pb-2">
+      <div className="flex items-center gap-2 mb-4 text-gray-900 font-bold pb-2">
         <Upload className="w-5 h-5 text-primary-500" />
         <span>Upload Model</span>
       </div>
@@ -44,8 +44,8 @@ export default function UploadBox() {
               <CheckCircle size={40} />
             </div>
             <div>
-              <p className="text-white font-bold text-xl">{selectedFile.name}</p>
-              <p className="text-sm text-[#DCD1CC] mt-2">{(selectedFile.size / 1024 / 1024).toFixed(2)} MB</p>
+              <p className="text-gray-900 font-bold text-xl">{selectedFile.name}</p>
+              <p className="text-sm text-gray-700 mt-2">{(selectedFile.size / 1024 / 1024).toFixed(2)} MB</p>
             </div>
             <p className="text-sm text-primary-500 mt-4 font-bold tracking-wide">Click or drag here to upload a different file</p>
           </div>
@@ -55,11 +55,11 @@ export default function UploadBox() {
               <Upload size={36} />
             </div>
             <div>
-              <h3 className="text-2xl font-extrabold text-white tracking-wide">Drop Your STL File Here</h3>
-              <p className="text-base text-[#8B8581] mt-3">or click to browse files</p>
-              <p className="text-xs text-[#8B8581] mt-3 uppercase tracking-wider font-bold">STL files only, up to 100MB</p>
+              <h3 className="text-2xl font-extrabold text-gray-900 tracking-wide">Drop Your STL File Here</h3>
+              <p className="text-base text-gray-600 mt-3">or click to browse files</p>
+              <p className="text-xs text-gray-600 mt-3 uppercase tracking-wider font-bold">STL files only, up to 100MB</p>
             </div>
-            <p className="text-sm text-[#8B8581] mt-6 font-medium">1000+ models quoted this month</p>
+            <p className="text-sm text-gray-600 mt-6 font-medium">1000+ models quoted this month</p>
           </div>
         )}
       </div>

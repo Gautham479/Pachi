@@ -18,7 +18,7 @@ export default function MainContentTabs() {
         <button
           onClick={() => setActiveTab('products')}
           className={`relative px-6 py-2.5 rounded-xl text-sm font-medium transition-colors flex items-center justify-center gap-2 min-w-[160px] ${
-            activeTab === 'products' ? 'text-white' : 'text-white/50 hover:text-white/80'
+            activeTab === 'products' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'
           }`}
         >
           {activeTab === 'products' && (
@@ -36,7 +36,7 @@ export default function MainContentTabs() {
         <button
           onClick={() => setActiveTab('custom')}
           className={`relative px-6 py-2.5 rounded-xl text-sm font-medium transition-colors flex items-center justify-center gap-2 min-w-[160px] ${
-            activeTab === 'custom' ? 'text-white' : 'text-white/50 hover:text-white/80'
+            activeTab === 'custom' ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'
           }`}
         >
           {activeTab === 'custom' && (

@@ -29,8 +29,8 @@ export default function FAQ() {
     <section id="faq" className="w-full py-24 bg-surface-card/20">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-4">Frequently Asked Questions</h2>
-          <p className="text-lg text-[#8B8581]">Everything you need to know about our service.</p>
+          <h2 className="text-3xl md:text-5xl font-extrabold text-gray-900 mb-4">Frequently Asked Questions</h2>
+          <p className="text-lg text-gray-600">Everything you need to know about our service.</p>
         </div>
 
         <div className="space-y-4">
@@ -43,7 +43,7 @@ export default function FAQ() {
                 className="w-full px-6 py-5 text-left flex items-center justify-between focus:outline-none"
                 onClick={() => setOpenIndex(openIndex === i ? -1 : i)}
               >
-                <span className={`font-bold text-lg ${openIndex === i ? 'text-primary-500' : 'text-white'}`}>
+                <span className={`font-bold text-lg ${openIndex === i ? 'text-primary-500' : 'text-gray-900'}`}>
                   {faq.q}
                 </span>
                 {openIndex === i ? (

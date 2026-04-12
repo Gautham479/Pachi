@@ -10,11 +10,11 @@ export default function Footer() {
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center gap-2 mb-4">
               <span className="text-2xl">🖨️</span>
-              <span className="font-bold text-xl tracking-tight text-white">
-                Pachi <span className="text-white">3D</span>
+              <span className="font-bold text-xl tracking-tight text-gray-900">
+                Pachi <span className="text-gray-900">3D</span>
               </span>
             </div>
-            <p className="text-[#8B8581] max-w-sm leading-relaxed mb-6">
+            <p className="text-gray-600 max-w-sm leading-relaxed mb-6">
               Industrial grade 3D printing for everyone. Upload, customize, and order high-quality parts in seconds.
             </p>
           </div>

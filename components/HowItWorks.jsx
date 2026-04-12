@@ -24,8 +24,8 @@ export default function HowItWorks() {
     <section id="how-it-works" className="w-full py-24">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-4">How It Works</h2>
-          <p className="text-lg text-[#8B8581] max-w-2xl mx-auto">
+          <h2 className="text-3xl md:text-5xl font-extrabold text-gray-900 mb-4">How It Works</h2>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             From digital file to physical object in just three simple steps.
           </p>
         </div>
@@ -36,8 +36,8 @@ export default function HowItWorks() {
               <div className="w-20 h-20 rounded-full bg-surface-card border border-surface-border flex items-center justify-center mb-6 shadow-xl relative">
                 {step.icon}
               </div>
-              <h3 className="text-xl font-bold text-white mb-3">{step.title}</h3>
-              <p className="text-[#DCD1CC] leading-relaxed max-w-xs">{step.desc}</p>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">{step.title}</h3>
+              <p className="text-gray-700 leading-relaxed max-w-xs">{step.desc}</p>
             </div>
           ))}
         </div>

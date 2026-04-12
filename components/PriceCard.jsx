@@ -14,7 +14,7 @@ export default function PriceCard() {
           {selectedFile ? (
             <div className="animate-in fade-in zoom-in duration-300">
               <p className="text-sm text-slate-400 font-medium tracking-wide uppercase mb-2">Estimated Price</p>
-              <h2 className="text-4xl sm:text-5xl font-black text-white tracking-tight">
+              <h2 className="text-4xl sm:text-5xl font-black text-gray-900 tracking-tight">
                 <span className="text-primary-500 mr-1">₹</span>{mockPrice}
               </h2>
               <p className="text-xs text-accent-500 mt-3 flex items-center justify-center gap-1">
@@ -27,8 +27,8 @@ export default function PriceCard() {
               <div className="w-12 h-12 bg-primary-500/10 text-primary-500 rounded-full flex items-center justify-center mb-4">
                 <UploadCloud size={24} />
               </div>
-              <p className="text-white font-medium">Upload your model to see price</p>
-              <p className="text-sm text-slate-400 mt-1">Instant pricing, no signup needed</p>
+              <p className="text-gray-700 font-medium">Upload your model to see price</p>
+              <p className="text-sm text-gray-600 mt-1">Instant pricing, no signup needed</p>
             </div>
           )}
         </div>

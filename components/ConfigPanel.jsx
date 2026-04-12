@@ -11,14 +11,14 @@ export default function ConfigPanel() {
     <div className="bg-surface-card rounded-2xl border border-surface-border p-6 sm:p-8 shadow-2xl">
       <div className="flex items-center gap-2 mb-8">
         <Zap className="w-5 h-5 text-primary-500" />
-        <h3 className="text-lg font-bold text-white">Configure Your Print</h3>
+        <h3 className="text-lg font-bold text-gray-900">Configure Your Print</h3>
       </div>
 
       <div className="space-y-6">
         {/* Material & Color Grid */}
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <label className="flex items-center gap-2 text-sm font-bold text-white">
+            <label className="flex items-center gap-2 text-sm font-bold text-gray-900">
               <Box className="w-4 h-4 text-primary-500" /> Material
             </label>
             <select 
@@ -87,7 +87,7 @@ export default function ConfigPanel() {
             className="w-full h-1.5 bg-surface-border rounded-lg appearance-none cursor-pointer accent-primary-500"
           />
           
-          <div className="flex justify-between text-xs text-[#8B8581] font-semibold mt-1">
+          <div className="flex justify-between text-xs text-gray-600 font-semibold mt-1">
             <span>Light (10%)</span>
             <span>Medium (50%)</span>
             <span>Solid (100%)</span>
@@ -107,8 +107,8 @@ export default function ConfigPanel() {
           >
             {selectedFile ? (
               <div className="space-y-1">
-                <p className="text-xs text-[#8B8581] uppercase tracking-wider font-bold">Estimated Cost</p>
-                <div className="text-4xl font-black text-white py-1">
+                <p className="text-xs text-gray-600 uppercase tracking-wider font-bold">Estimated Cost</p>
+                <div className="text-4xl font-black text-gray-900 py-1">
                   <span className="text-primary-500 text-3xl align-super mr-1">₹</span>{mockPrice}
                 </div>
                 <p className="text-xs text-accent-500 flex items-center justify-center gap-1 font-medium mt-1">
@@ -119,8 +119,8 @@ export default function ConfigPanel() {
             ) : (
               <>
                 <UploadCloud className="w-6 h-6 text-surface-border/80 mb-3" />
-                <p className="text-[#DCD1CC] font-bold text-base">Upload file on the left</p>
-                <p className="text-xs text-[#8B8581] font-medium mt-1">Pricing instantly appears here</p>
+                <p className="text-gray-700 font-bold text-base">Upload file on the left</p>
+                <p className="text-xs text-gray-600 font-medium mt-1">Pricing instantly appears here</p>
               </>
             )}
           </div>
@@ -132,8 +132,8 @@ export default function ConfigPanel() {
             onClick={addToCart}
             className={`flex items-center gap-2 py-4 px-6 rounded-xl font-bold transition-all shadow-sm
               ${selectedFile 
-                ? 'bg-surface-bg border border-surface-border text-white hover:border-primary-500/50 hover:bg-surface-border/50' 
-                : 'bg-surface-bg text-[#8B8581] border border-surface-border cursor-not-allowed opacity-50'
+                ? 'bg-surface-bg border border-surface-border text-gray-900 hover:border-primary-500/50 hover:bg-surface-border/50' 
+                : 'bg-surface-bg text-gray-400 border border-surface-border cursor-not-allowed opacity-50'
               }
             `}
           >
@@ -146,7 +146,7 @@ export default function ConfigPanel() {
             className={`py-4 px-6 rounded-xl font-bold transition-all w-full
               ${selectedFile 
                 ? 'bg-primary-500 text-white hover:bg-primary-600 shadow-lg shadow-primary-500/20 active:scale-[0.98]' 
-                : 'bg-surface-bg text-[#DCD1CC]/30 cursor-not-allowed border border-surface-border/50'
+                : 'bg-surface-bg text-gray-300 cursor-not-allowed border border-surface-border/50'
               }
             `}
           >

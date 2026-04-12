@@ -68,26 +68,26 @@ export default function Navbar() {
                 onClick={goToHome}
               >
                 <span className="text-2xl">🖨️</span>
-                <span className="font-bold text-xl tracking-tight text-white">
-                  Pachi <span className="text-white">3D</span>
+                <span className="font-bold text-xl tracking-tight text-gray-900">
+                  Pachi <span className="text-gray-900">3D</span>
                 </span>
               </div>
               
               {/* Links */}
-              <div className="hidden lg:flex items-center gap-6 text-sm font-semibold text-[#DCD1CC]">
-                <button onClick={() => scrollTo('features')} className={`transition-colors ${activeSection === 'features' ? 'text-primary-500' : 'hover:text-white'}`}>Features</button>
-                <button onClick={() => scrollTo('how-it-works')} className={`transition-colors ${activeSection === 'how-it-works' ? 'text-primary-500' : 'hover:text-white'}`}>How It Works</button>
-                <button onClick={() => scrollTo('faq')} className={`transition-colors ${activeSection === 'faq' ? 'text-primary-500' : 'hover:text-white'}`}>FAQ</button>
+              <div className="hidden lg:flex items-center gap-6 text-sm font-semibold text-gray-700">
+                <button onClick={() => scrollTo('features')} className={`transition-colors ${activeSection === 'features' ? 'text-primary-500' : 'hover:text-gray-900'}`}>Features</button>
+                <button onClick={() => scrollTo('how-it-works')} className={`transition-colors ${activeSection === 'how-it-works' ? 'text-primary-500' : 'hover:text-gray-900'}`}>How It Works</button>
+                <button onClick={() => scrollTo('faq')} className={`transition-colors ${activeSection === 'faq' ? 'text-primary-500' : 'hover:text-gray-900'}`}>FAQ</button>
               </div>
             </div>
 
             {/* Right Actions */}
             <div className="flex items-center gap-5">
               <div 
-                className="relative cursor-pointer hover:text-white transition-colors"
+                className="relative cursor-pointer hover:text-gray-900 transition-colors"
                 onClick={openCart}
               >
-                <ShoppingCart className="w-5 h-5 text-[#DCD1CC]" />
+                <ShoppingCart className="w-5 h-5 text-gray-700" />
                 <span className="absolute -top-1.5 -right-1.5 bg-primary-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">{cart.length}</span>
               </div>
               <button 
