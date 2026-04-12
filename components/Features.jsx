@@ -5,23 +5,23 @@ export default function Features() {
   const features = [
     {
       icon: <Clock className="w-8 h-8 text-primary-500" />,
-      title: "PET(Polyethylene Terephthalate) Printing",
-      desc: "ahh bro."
+      title: "TPU",
+      desc: "Flexible and durable thermoplastic urethane. Perfect for flexible parts, rubber-like components, and impact-resistant applications."
     },
     {
       icon: <ShieldCheck className="w-8 h-8 text-primary-500" />,
-      title: "Quality Guaranteed",
-      desc: "Every print goes through strict QC. If it fails, we reprint it for free."
+      title: "ABS",
+      desc: "Strong and rigid acrylonitrile butadiene styrene. Ideal for mechanical parts, heat-resistant components, and functional prototypes."
     },
     {
       icon: <Cpu className="w-8 h-8 text-primary-500" />,
-      title: "Industrial Grade",
-      desc: "Printed on high-end machines ensuring precision, dimensional accuracy, and strength."
+      title: "PETG",
+      desc: "Durable and food-safe polyethylene terephthalate glycol. Excellent for functional parts, containers, and long-term durability applications."
     },
     {
       icon: <Truck className="w-8 h-8 text-primary-500" />,
-      title: "Nationwide Shipping",
-      desc: "We deliver across India with reliable logistics partners with tracking."
+      title: "PET",
+      desc: "Lightweight and recyclable polyethylene terephthalate. Great for prototypes, transparent parts, and environmentally conscious projects."
     }
   ];
 
