@@ -6,7 +6,7 @@ export default function Features() {
     {
       icon: <Clock className="w-8 h-8 text-primary-500" />,
       title: "TPU",
-      desc: "Flexible and durable thermoplastic urethane. Perfect for flexible parts, rubber-like components, and impact-resistant applications."
+      desc: " Flexible and durable thermoplastic urethane. Perfect for flexible parts, rubber-like components, and impact-resistant applications."
     },
     {
       icon: <ShieldCheck className="w-8 h-8 text-primary-500" />,
