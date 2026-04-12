@@ -6,7 +6,7 @@ export default function Features() {
     {
       icon: <Clock className="w-8 h-8 text-primary-500" />,
       title: "PET(Polyethylene Terephthalate) Printing",
-      desc: "Get your parts shipped within 24-48 hours with our priority printing service."
+      desc: "ahh bro."
     },
     {
       icon: <ShieldCheck className="w-8 h-8 text-primary-500" />,
