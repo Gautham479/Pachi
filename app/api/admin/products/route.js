@@ -33,9 +33,10 @@ export async function GET() {
     });
 
     return NextResponse.json(products);
-  } catch {
+  } catch (error) {
+    const details = error instanceof Error ? error.message : 'Unknown database error';
     return NextResponse.json(
-      { error: 'Database not available on this deployment. Please configure a hosted database.' },
+      { error: `Database not available on this deployment. ${details}` },
       { status: 500 }
     );
   }
@@ -98,9 +99,10 @@ export async function POST(request) {
   let uploadedImagePath = '';
   try {
     uploadedImagePath = await saveProductImage(imageFile);
-  } catch {
+  } catch (error) {
+    const details = error instanceof Error ? error.message : 'Unknown upload error';
     return NextResponse.json(
-      { error: 'Image upload failed. Check Supabase Storage env vars and bucket policy.' },
+      { error: `Image upload failed. ${details}` },
       { status: 500 }
     );
   }
@@ -125,9 +127,10 @@ export async function POST(request) {
     });
 
     return NextResponse.json(created, { status: 201 });
-  } catch {
+  } catch (error) {
+    const details = error instanceof Error ? error.message : 'Unknown write error';
     return NextResponse.json(
-      { error: 'Database write failed. Check SUPABASE Postgres DATABASE_URL in deployment env.' },
+      { error: `Database write failed. ${details}` },
       { status: 500 }
     );
   }

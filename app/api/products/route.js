@@ -15,13 +15,18 @@ export async function GET(request) {
       orderBy: { createdAt: 'asc' },
     });
 
-    if (!products.length) {
+    if (!products.length && process.env.NODE_ENV !== 'production') {
       return NextResponse.json(DEFAULT_PRODUCTS);
     }
 
     return NextResponse.json(products);
-  } catch {
+  } catch (error) {
     // Fallback for environments without persistent/local DB support.
-    return NextResponse.json(DEFAULT_PRODUCTS);
+    if (process.env.NODE_ENV !== 'production') {
+      return NextResponse.json(DEFAULT_PRODUCTS);
+    }
+
+    const details = error instanceof Error ? error.message : 'Unknown database error';
+    return NextResponse.json({ error: `Failed to load products. ${details}` }, { status: 500 });
   }
 }

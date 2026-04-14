@@ -37,12 +37,17 @@ export async function PATCH(request, { params }) {
     }
   }
 
-  const updated = await prisma.product.update({
-    where: { id },
-    data: updates,
-  });
+  try {
+    const updated = await prisma.product.update({
+      where: { id },
+      data: updates,
+    });
 
-  return NextResponse.json(updated);
+    return NextResponse.json(updated);
+  } catch (error) {
+    const details = error instanceof Error ? error.message : 'Unknown update error';
+    return NextResponse.json({ error: `Update failed. ${details}` }, { status: 500 });
+  }
 }
 
 export async function DELETE(_, { params }) {
@@ -50,6 +55,11 @@ export async function DELETE(_, { params }) {
   if (unauthorized) return unauthorized;
 
   const { id } = await params;
-  await prisma.product.delete({ where: { id } });
-  return NextResponse.json({ success: true });
+  try {
+    await prisma.product.delete({ where: { id } });
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    const details = error instanceof Error ? error.message : 'Unknown delete error';
+    return NextResponse.json({ error: `Delete failed. ${details}` }, { status: 500 });
+  }
 }
