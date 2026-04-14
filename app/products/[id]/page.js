@@ -112,14 +112,14 @@ export default function ProductPage() {
                 setZoom({ x: 0, y: 0 });
               }}
               onMouseMove={handleImageMouseMove}
-              className="w-full max-w-md h-96 rounded-2xl shadow-2xl relative overflow-hidden cursor-zoom-in bg-surface-muted"
+              className="w-full max-w-md aspect-[4/3] rounded-2xl shadow-2xl relative overflow-hidden cursor-zoom-in bg-surface-muted"
             >
               {product.image ? (
                 <Image
                   src={product.image}
                   alt={product.name}
                   fill
-                  className="object-cover w-full h-full"
+                  className="object-contain w-full h-full p-3"
                   sizes="(max-width: 1024px) 100vw, 50vw"
                   priority
                 />
@@ -307,13 +307,13 @@ export default function ProductPage() {
                   onClick={() => router.push(`/products/${p.slug}`)}
                   className="bg-surface-card border border-surface-border rounded-2xl overflow-hidden hover:border-primary-500/30 transition-all cursor-pointer group shadow-sm"
                 >
-                  <div className={`w-full h-40 relative opacity-80 group-hover:opacity-100 transition-opacity ${p.image ? '' : `bg-gradient-to-br ${p.imageColor}`}`}>
+                  <div className={`w-full aspect-[4/3] relative opacity-80 group-hover:opacity-100 transition-opacity ${p.image ? 'bg-surface-muted' : `bg-gradient-to-br ${p.imageColor}`}`}>
                     {p.image ? (
                       <Image
                         src={p.image}
                         alt={p.name}
                         fill
-                        className="object-cover w-full h-full"
+                        className="object-contain w-full h-full p-2"
                         sizes="(max-width: 768px) 100vw, 33vw"
                       />
                     ) : (

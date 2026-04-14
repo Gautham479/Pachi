@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 const ADMIN_COOKIE_NAME = 'pachi_admin_session';
 const SESSION_TOKEN = process.env.ADMIN_SESSION_TOKEN || 'change-me-admin-session-token';
 
-export function middleware(request) {
+export function proxy(request) {
   const { pathname } = request.nextUrl;
 
   const isAdminPage = pathname.startsWith('/admin');

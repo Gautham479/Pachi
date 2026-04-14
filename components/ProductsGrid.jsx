@@ -111,13 +111,13 @@ export default function ProductsGrid() {
             <Link href={`/products/${product.slug}`}>
               <div className="bg-surface-card border border-surface-border rounded-2xl overflow-hidden hover:border-primary-500/30 transition-all group flex flex-col h-full cursor-pointer transform hover:scale-105">
                 {/* Product Image */}
-                <div className="w-full h-48 relative opacity-90 group-hover:opacity-100 transition-opacity bg-surface-muted overflow-hidden">
+                <div className="w-full aspect-[4/3] relative opacity-90 group-hover:opacity-100 transition-opacity bg-surface-muted overflow-hidden">
                    {product.image ? (
                      <Image
                        src={product.image}
                        alt={product.name}
                        fill
-                       className="object-cover w-full h-full"
+                       className="object-contain w-full h-full p-3"
                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                      />
                    ) : (
