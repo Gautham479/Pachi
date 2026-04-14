@@ -21,6 +21,7 @@ model Product {
   material        String
   price           Int
   image           String
+  images          String[] @default([])
   imageColor      String
   type            String
   dimensions      String

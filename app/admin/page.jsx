@@ -24,6 +24,9 @@ export default function AdminDashboardPage() {
   const [products, setProducts] = useState([]);
   const [form, setForm] = useState(EMPTY_FORM);
   const [imageFile, setImageFile] = useState(null);
+  const [imageFiles, setImageFiles] = useState([]);
+  const [additionalImagesByProduct, setAdditionalImagesByProduct] = useState({});
+  const [uploadingProductId, setUploadingProductId] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -86,6 +89,9 @@ export default function AdminDashboardPage() {
     if (imageFile) {
       payload.set('imageFile', imageFile);
     }
+    for (const file of imageFiles) {
+      payload.append('imageFiles', file);
+    }
 
     const response = await fetch('/api/admin/products', {
       method: 'POST',
@@ -112,8 +118,36 @@ export default function AdminDashboardPage() {
 
     setForm(EMPTY_FORM);
     setImageFile(null);
+    setImageFiles([]);
     await fetchProducts();
     setSaving(false);
+  };
+
+  const addImagesToProduct = async (productId) => {
+    const files = additionalImagesByProduct[productId] || [];
+    if (!files.length) return;
+
+    setUploadingProductId(productId);
+    setError('');
+
+    const payload = new FormData();
+    files.forEach((file) => payload.append('imageFiles', file));
+
+    const response = await fetch(`/api/admin/products/${productId}/images`, {
+      method: 'POST',
+      body: payload,
+    });
+
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}));
+      setError(data?.error || 'Failed to add images.');
+      setUploadingProductId('');
+      return;
+    }
+
+    setAdditionalImagesByProduct((prev) => ({ ...prev, [productId]: [] }));
+    await fetchProducts();
+    setUploadingProductId('');
   };
 
   const toggleStock = async (product) => {
@@ -179,11 +213,21 @@ export default function AdminDashboardPage() {
             </select>
             <input className="input-field" type="number" placeholder="Price" value={form.price} onChange={(e) => updateField('price', e.target.value)} required />
             <div>
-              <label className="block text-xs text-fg-muted mb-1">Product Image</label>
+              <label className="block text-xs text-fg-muted mb-1">Primary Product Image</label>
               <input
                 type="file"
                 accept="image/*"
                 onChange={(e) => setImageFile(e.target.files?.[0] || null)}
+                className="input-field"
+              />
+            </div>
+            <div>
+              <label className="block text-xs text-fg-muted mb-1">Additional Images</label>
+              <input
+                type="file"
+                multiple
+                accept="image/*"
+                onChange={(e) => setImageFiles(Array.from(e.target.files || []))}
                 className="input-field"
               />
             </div>
@@ -218,8 +262,28 @@ export default function AdminDashboardPage() {
                   <div>
                     <p className="font-bold text-fg">{product.name}</p>
                     <p className="text-sm text-fg-muted">{product.type} | {product.material} | ₹{product.price}</p>
+                    <p className="text-xs text-fg-subtle mt-1">Images: {(product.images || []).length}</p>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      onChange={(e) =>
+                        setAdditionalImagesByProduct((prev) => ({
+                          ...prev,
+                          [product.id]: Array.from(e.target.files || []),
+                        }))
+                      }
+                      className="input-field !py-1.5 !text-xs w-[220px]"
+                    />
+                    <button
+                      onClick={() => addImagesToProduct(product.id)}
+                      disabled={uploadingProductId === product.id || !(additionalImagesByProduct[product.id] || []).length}
+                      className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-primary-500/15 text-fg disabled:opacity-50"
+                    >
+                      {uploadingProductId === product.id ? 'Uploading...' : 'Add Images'}
+                    </button>
                     <button
                       onClick={() => toggleStock(product)}
                       className={`px-3 py-1.5 rounded-lg text-sm font-semibold ${product.inStock ? 'bg-green-500/15 text-green-600' : 'bg-amber-500/15 text-amber-600'}`}

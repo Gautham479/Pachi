@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { isAdminAuthenticated } from '@/lib/adminAuth';
 import { ensureProductsSeeded } from '@/lib/productService';
 import { MATERIAL_TYPES, PRODUCT_TYPES } from '@/lib/catalog';
-import { saveProductImage } from '@/lib/uploadImage';
+import { saveProductImage, saveProductImages } from '@/lib/uploadImage';
 
 function slugify(value) {
   return value
@@ -67,6 +67,7 @@ export async function POST(request) {
   };
 
   const imageFile = formData.get('imageFile');
+  const imageFiles = formData.getAll('imageFiles');
 
   const requiredFields = ['name', 'description', 'fullDescription', 'material', 'price', 'type'];
   for (const field of requiredFields) {
@@ -97,8 +98,10 @@ export async function POST(request) {
   }
 
   let uploadedImagePath = '';
+  let uploadedImagePaths = [];
   try {
     uploadedImagePath = await saveProductImage(imageFile);
+    uploadedImagePaths = await saveProductImages(imageFiles);
   } catch (error) {
     const details = error instanceof Error ? error.message : 'Unknown upload error';
     return NextResponse.json(
@@ -108,6 +111,11 @@ export async function POST(request) {
   }
 
   try {
+    const finalPrimaryImage = uploadedImagePath || uploadedImagePaths[0] || '';
+    const finalImages = finalPrimaryImage
+      ? [finalPrimaryImage, ...uploadedImagePaths.filter((url) => url !== finalPrimaryImage)]
+      : uploadedImagePaths;
+
     const created = await prisma.product.create({
       data: {
         slug,
@@ -116,7 +124,8 @@ export async function POST(request) {
         fullDescription: body.fullDescription.trim(),
         material: body.material,
         price,
-        image: uploadedImagePath,
+        image: finalPrimaryImage,
+        images: finalImages,
         imageColor: body.imageColor || 'from-[#6366f1] to-[#8b5cf6]',
         type: body.type,
         dimensions: body.dimensions || 'N/A',

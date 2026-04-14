@@ -10,6 +10,12 @@ import Footer from '@/components/Footer';
 import CartDrawer from '@/components/CartDrawer';
 import { AVAILABLE_COLORS } from '@/lib/catalog';
 
+const getProductImages = (product) => {
+  if (!product) return [];
+  const all = [product.image, ...(product.images || [])].filter(Boolean);
+  return [...new Set(all)];
+};
+
 export default function ProductPage() {
   const params = useParams();
   const router = useRouter();
@@ -18,6 +24,7 @@ export default function ProductPage() {
   const [addedToCart, setAddedToCart] = useState(false);
   const [imageHovered, setImageHovered] = useState(false);
   const [zoom, setZoom] = useState({ x: 0, y: 0 });
+  const [selectedImage, setSelectedImage] = useState('');
   const [colorMode, setColorMode] = useState('Single Color');
   const [singleColor, setSingleColor] = useState('Black');
   const addDirectItemToCart = useStore((state) => state.addDirectItemToCart);
@@ -32,6 +39,8 @@ export default function ProductPage() {
       }
       const data = await response.json();
       setProduct(data);
+      const images = getProductImages(data);
+      setSelectedImage(images[0] || '');
 
       const productsResponse = await fetch('/api/products?includeOutOfStock=1');
       const allProducts = await productsResponse.json().catch(() => []);
@@ -114,9 +123,9 @@ export default function ProductPage() {
               onMouseMove={handleImageMouseMove}
               className="w-full max-w-md aspect-[4/3] rounded-2xl shadow-2xl relative overflow-hidden cursor-zoom-in bg-surface-muted"
             >
-              {product.image ? (
+              {selectedImage ? (
                 <Image
-                  src={product.image}
+                  src={selectedImage}
                   alt={product.name}
                   fill
                   className="object-contain w-full h-full p-3"
@@ -145,12 +154,12 @@ export default function ProductPage() {
             </div>
 
             {/* Zoom Preview Panel - Larger and Better Aligned */}
-            {imageHovered && product.image && (
+            {imageHovered && selectedImage && (
               <div className="absolute top-0 rounded-2xl shadow-2xl overflow-hidden bg-surface-muted border-2 border-cta pointer-events-none z-50 w-96 h-96"
                 style={{ left: 'calc(100% + 1.5rem)' }}
               >
                 <Image
-                  src={product.image}
+                  src={selectedImage}
                   alt={`${product.name} zoomed`}
                   fill
                   className="object-cover w-full h-full"
@@ -295,6 +304,23 @@ export default function ProductPage() {
               </button>
             </div>
           </div>
+
+          {getProductImages(product).length > 1 && (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {getProductImages(product).map((imageUrl) => (
+                <button
+                  key={imageUrl}
+                  type="button"
+                  onClick={() => setSelectedImage(imageUrl)}
+                  className={`w-16 h-16 rounded-lg border overflow-hidden relative ${
+                    selectedImage === imageUrl ? 'border-primary-500' : 'border-surface-border'
+                  }`}
+                >
+                  <Image src={imageUrl} alt="Product thumbnail" fill className="object-cover" sizes="64px" />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Related Products Section */}
@@ -307,10 +333,10 @@ export default function ProductPage() {
                   onClick={() => router.push(`/products/${p.slug}`)}
                   className="bg-surface-card border border-surface-border rounded-2xl overflow-hidden hover:border-primary-500/30 transition-all cursor-pointer group shadow-sm"
                 >
-                  <div className={`w-full aspect-[4/3] relative opacity-80 group-hover:opacity-100 transition-opacity ${p.image ? 'bg-surface-muted' : `bg-gradient-to-br ${p.imageColor}`}`}>
-                    {p.image ? (
+                  <div className={`w-full aspect-[4/3] relative opacity-80 group-hover:opacity-100 transition-opacity ${(p.image || p.images?.[0]) ? 'bg-surface-muted' : `bg-gradient-to-br ${p.imageColor}`}`}>
+                    {(p.image || p.images?.[0]) ? (
                       <Image
-                        src={p.image}
+                        src={p.image || p.images?.[0]}
                         alt={p.name}
                         fill
                         className="object-contain w-full h-full p-2"

@@ -8,6 +8,8 @@ import { useStore } from '@/store/useStore';
 import { motion } from 'framer-motion';
 import { AVAILABLE_COLORS, PRODUCT_TYPES } from '@/lib/catalog';
 
+const getPrimaryImage = (product) => product.image || product.images?.[0] || '';
+
 export default function ProductsGrid() {
   const [selectedType, setSelectedType] = useState('All');
   const [productColorOptions, setProductColorOptions] = useState({});
@@ -112,9 +114,9 @@ export default function ProductsGrid() {
               <div className="bg-surface-card border border-surface-border rounded-2xl overflow-hidden hover:border-primary-500/30 transition-all group flex flex-col h-full cursor-pointer transform hover:scale-105">
                 {/* Product Image */}
                 <div className="w-full aspect-[4/3] relative opacity-90 group-hover:opacity-100 transition-opacity bg-surface-muted overflow-hidden">
-                   {product.image ? (
+                   {getPrimaryImage(product) ? (
                      <Image
-                       src={product.image}
+                       src={getPrimaryImage(product)}
                        alt={product.name}
                        fill
                        className="object-contain w-full h-full p-3"
