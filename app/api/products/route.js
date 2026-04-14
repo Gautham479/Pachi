@@ -15,6 +15,10 @@ export async function GET(request) {
       orderBy: { createdAt: 'asc' },
     });
 
+    if (!products.length) {
+      return NextResponse.json(DEFAULT_PRODUCTS);
+    }
+
     return NextResponse.json(products);
   } catch {
     // Fallback for environments without persistent/local DB support.

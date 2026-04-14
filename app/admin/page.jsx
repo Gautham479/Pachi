@@ -30,9 +30,22 @@ export default function AdminDashboardPage() {
 
   const fetchProducts = async () => {
     setLoading(true);
+    setError('');
     const response = await fetch('/api/admin/products');
     if (!response.ok) {
-      setError('Failed to load products.');
+      let message = 'Failed to load products.';
+      try {
+        const data = await response.json();
+        if (data?.error) {
+          message = data.error;
+        }
+      } catch {
+        const text = await response.text().catch(() => '');
+        if (text) {
+          message = text.slice(0, 160);
+        }
+      }
+      setError(message);
       setLoading(false);
       return;
     }
@@ -80,8 +93,19 @@ export default function AdminDashboardPage() {
     });
 
     if (!response.ok) {
-      const data = await response.json().catch(() => ({}));
-      setError(data.error || 'Failed to create product.');
+      let message = 'Failed to create product.';
+      try {
+        const data = await response.json();
+        if (data?.error) {
+          message = data.error;
+        }
+      } catch {
+        const text = await response.text().catch(() => '');
+        if (text) {
+          message = text.slice(0, 160);
+        }
+      }
+      setError(message);
       setSaving(false);
       return;
     }
@@ -182,8 +206,11 @@ export default function AdminDashboardPage() {
 
         <section className="bg-surface-card border border-surface-border rounded-2xl p-6">
           <h2 className="text-xl font-bold text-fg mb-4">Manage Products</h2>
+          {error ? <p className="text-red-500 text-sm mb-3">{error}</p> : null}
           {loading ? (
             <p className="text-fg-muted">Loading products...</p>
+          ) : products.length === 0 ? (
+            <p className="text-fg-muted text-sm">No products found yet. Create one above.</p>
           ) : (
             <div className="space-y-3">
               {products.map((product) => (
