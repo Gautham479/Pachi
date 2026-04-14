@@ -1,36 +1,41 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
-
 ## Getting Started
 
-First, run the development server:
+Install dependencies and run the development server:
 
 ```bash
+npm install
+npx prisma migrate dev
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## Admin Panel
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Use the admin panel to add/remove products and mark products in stock/out of stock.
 
-## Learn More
+1. Open [http://localhost:3000/admin/login](http://localhost:3000/admin/login)
+2. Log in with credentials from `.env`
+3. Manage products from the dashboard (no code changes required)
 
-To learn more about Next.js, take a look at the following resources:
+Default local env values:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```env
+ADMIN_USERNAME="admin"
+ADMIN_PASSWORD="admin123"
+ADMIN_SESSION_TOKEN="change-me-admin-session-token"
+DATABASE_URL="file:./dev.db"
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## API
 
-## Deploy on Vercel
+- Public products: `GET /api/products`
+- Product detail: `GET /api/products/:slug`
+- Admin login: `POST /api/admin/login`
+- Admin product management: `GET/POST /api/admin/products`
+- Admin update/delete: `PATCH/DELETE /api/admin/products/:id`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Notes
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- First API read seeds the database with default products if empty.
+- Keep `ADMIN_SESSION_TOKEN` strong in production.

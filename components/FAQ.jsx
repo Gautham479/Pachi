@@ -15,7 +15,7 @@ export default function FAQ() {
     },
     {
       q: "What materials should I choose?",
-      a: "PLA is great for visual prototypes and basic use. ABS offers better temperature resistance. PETG provides a balance of strength and durability."
+      a: "PLA is great for visual prototypes and basic use. PETG provides a balance of strength and durability, ABS offers better temperature resistance, and TPU is best for flexible parts."
     },
     {
       q: "Do you offer post-processing?",

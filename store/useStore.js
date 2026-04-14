@@ -7,15 +7,18 @@ export const useStore = create((set) => ({
   config: {
     material: 'PLA',
     color: 'Black',
+    colorMode: 'Single Color',
     quality: 'Standard (0.2mm)',
     strength: 20,
   },
   mockPrice: null,
   cart: [],
   isCartOpen: false,
+  searchQuery: '',
 
   openCart: () => set({ isCartOpen: true }),
   closeCart: () => set({ isCartOpen: false }),
+  setSearchQuery: (query) => set({ searchQuery: query }),
 
   removeFromCart: (id) => set((state) => ({
     cart: state.cart.filter((item) => item.id !== id)
@@ -63,6 +66,7 @@ function calculateMockPrice(config) {
   
   if (config.material === 'ABS') price += 100;
   else if (config.material === 'PETG') price += 150;
+  else if (config.material === 'TPU') price += 200;
 
   if (config.quality === 'High (0.1mm)') price += 200;
   else if (config.quality === 'Draft (0.3mm)') price -= 100;

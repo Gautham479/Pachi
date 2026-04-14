@@ -1,16 +1,19 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { Rocket, ShoppingCart } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
+import { Rocket, Search, ShoppingCart } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import ThemeToggle from './ThemeToggle';
 
 export default function Navbar() {
   const router = useRouter();
+  const pathname = usePathname();
   const [activeSection, setActiveSection] = useState('quote');
   const cart = useStore((state) => state.cart);
   const openCart = useStore((state) => state.openCart);
+  const searchQuery = useStore((state) => state.searchQuery);
+  const setSearchQuery = useStore((state) => state.setSearchQuery);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -58,6 +61,23 @@ export default function Navbar() {
     }
   };
 
+  const handleSearchChange = (event) => {
+    const nextQuery = event.target.value;
+    setSearchQuery(nextQuery);
+
+    // Ensure search is visible immediately by taking users to product results.
+    if (pathname !== '/') {
+      router.push('/?section=content');
+      return;
+    }
+
+    const contentSection = document.getElementById('content');
+    if (contentSection) {
+      const y = contentSection.getBoundingClientRect().top + window.scrollY - 80;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    }
+  };
+
   return (
     <nav className="w-full bg-surface-bg/95 backdrop-blur-md sticky top-0 z-50 border-b border-surface-border/60">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
@@ -84,6 +104,17 @@ export default function Navbar() {
 
             {/* Right Actions */}
             <div className="flex items-center gap-3 sm:gap-5">
+              <div className="hidden md:flex items-center gap-2 bg-surface-card border border-surface-border rounded-full px-3 py-2 w-72">
+                <Search className="w-4 h-4 text-fg-muted" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  placeholder="Search products..."
+                  className="w-full bg-transparent text-sm text-fg placeholder:text-fg-subtle focus:outline-none"
+                  aria-label="Search products"
+                />
+              </div>
               <ThemeToggle />
               <div 
                 className="relative cursor-pointer hover:text-fg transition-colors"

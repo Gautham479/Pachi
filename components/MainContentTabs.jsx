@@ -6,9 +6,12 @@ import UploadBox from './UploadBox';
 import ConfigPanel from './ConfigPanel';
 import ProductsGrid from './ProductsGrid';
 import { PackageSearch, PenTool } from 'lucide-react';
+import { useStore } from '@/store/useStore';
 
 export default function MainContentTabs() {
   const [activeTab, setActiveTab] = useState('products'); // 'products' or 'custom'
+  const searchQuery = useStore((state) => state.searchQuery);
+  const visibleTab = searchQuery.trim() ? 'products' : activeTab;
 
   return (
     <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 mb-24 flex flex-col items-center">
@@ -18,10 +21,10 @@ export default function MainContentTabs() {
         <button
           onClick={() => setActiveTab('products')}
           className={`relative px-6 py-2.5 rounded-xl text-sm font-medium transition-colors flex items-center justify-center gap-2 min-w-[160px] ${
-            activeTab === 'products' ? 'text-fg' : 'text-fg-muted hover:text-fg'
+            visibleTab === 'products' ? 'text-fg' : 'text-fg-muted hover:text-fg'
           }`}
         >
-          {activeTab === 'products' && (
+          {visibleTab === 'products' && (
             <motion.div
               layoutId="activeTabIndicator"
               className="absolute inset-0 bg-surface-card border border-surface-border rounded-xl shadow-sm"
@@ -36,10 +39,10 @@ export default function MainContentTabs() {
         <button
           onClick={() => setActiveTab('custom')}
           className={`relative px-6 py-2.5 rounded-xl text-sm font-medium transition-colors flex items-center justify-center gap-2 min-w-[160px] ${
-            activeTab === 'custom' ? 'text-fg' : 'text-fg-muted hover:text-fg'
+            visibleTab === 'custom' ? 'text-fg' : 'text-fg-muted hover:text-fg'
           }`}
         >
-          {activeTab === 'custom' && (
+          {visibleTab === 'custom' && (
             <motion.div
               layoutId="activeTabIndicator"
               className="absolute inset-0 bg-surface-card border border-surface-border rounded-xl shadow-sm"
@@ -55,7 +58,7 @@ export default function MainContentTabs() {
       {/* Content Area */}
       <div className="w-full relative min-h-[500px]">
         <AnimatePresence mode="wait">
-          {activeTab === 'products' ? (
+          {visibleTab === 'products' ? (
             <motion.div
               key="products"
               initial={{ opacity: 0, y: 10 }}

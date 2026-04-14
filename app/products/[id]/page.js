@@ -8,129 +8,54 @@ import { useStore } from '@/store/useStore';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import CartDrawer from '@/components/CartDrawer';
-
-const MOCK_PRODUCTS = [
-  {
-    id: 'p1',
-    name: 'Articulated Dragon',
-    description: 'A fully flexible printed dragon with stunning details.',
-    fullDescription: 'This articulated dragon is designed with precision joints that allow for smooth, realistic movement. Perfect for collectors and enthusiasts of fantasy art, this 3D printed marvel combines intricate detailing with functional flexibility.',
-    material: 'Silk',
-    price: 1599,
-    image: '/products/dragon.png',
-    imageColor: 'from-[#ff7e5f] to-[#feb47b]',
-    type: 'Collectible',
-    specs: {
-      dimensions: '25cm x 15cm x 10cm',
-      weight: '150g',
-      printTime: '8-10 hours',
-      material: 'Silk PLA'
-    }
-  },
-  {
-    id: 'p2',
-    name: 'Minimalist Headphone Stand',
-    description: 'Sleek geometric design to keep your desk organized.',
-    fullDescription: 'A minimalist headphone stand with clean geometric lines. Designed to complement modern desk setups while providing sturdy support for your headphones. Perfect for productivity enthusiasts.',
-    material: 'Matte PETG',
-    price: 100,
-    image: '/products/headphone-stand.png',
-    imageColor: 'from-[#2193b0] to-[#6dd5ed]',
-    type: 'Desk Accessory',
-    specs: {
-      dimensions: '20cm x 8cm x 12cm',
-      weight: '80g',
-      printTime: '4-5 hours',
-      material: 'Matte PETG'
-    }
-  },
-  {
-    id: 'p3',
-    name: 'Topology Planter',
-    description: 'Mathematical topological surface designed for indoor plants.',
-    fullDescription: 'A mathematically inspired planter with a unique topological surface pattern. The organic, flowing design creates visual interest while providing a functional home for small indoor plants.',
-    material: 'Wood-fill PLA',
-    price: 2499,
-    image: '/products/planter.png',
-    imageColor: 'from-[#11998e] to-[#38ef7d]',
-    type: 'Home Decor',
-    specs: {
-      dimensions: '15cm height',
-      weight: '120g',
-      printTime: '6-7 hours',
-      material: 'Wood-fill PLA'
-    }
-  },
-  {
-    id: 'p4',
-    name: 'Ergonomic Macropad Case',
-    description: 'Custom 3D printed case for 9-key mechanical macropads.',
-    fullDescription: 'A fully customizable ergonomic case for your 9-key mechanical macropad. Features a contoured design for comfortable palm rest and precision cutouts for all components.',
-    material: 'ABS',
-    price: 850,
-    imageColor: 'from-[#bdc3c7] to-[#2c3e50]',
-    type: 'Tech Accessory',
-    specs: {
-      dimensions: '12cm x 10cm x 5cm',
-      weight: '95g',
-      printTime: '5-6 hours',
-      material: 'ABS'
-    }
-  },
-  {
-    id: 'p5',
-    name: 'Voronoi Pen Holder',
-    description: 'Abstract voronoi patterned desk accessory.',
-    fullDescription: 'An artistic desk accessory featuring a beautiful Voronoi pattern. The abstract geometric design creates a stunning visual centerpiece while keeping pens and markers organized.',
-    material: 'Resin',
-    price: 1200,
-    imageColor: 'from-[#8e2de2] to-[#4a00e0]',
-    type: 'Home Decor',
-    specs: {
-      dimensions: '10cm x 10cm x 8cm',
-      weight: '110g',
-      printTime: '5.5 hours',
-      material: 'Resin'
-    }
-  },
-  {
-    id: 'p6',
-    name: 'Mechanical Gyroscope',
-    description: 'Print-in-place moving mechanical toy.',
-    fullDescription: 'A fully functional mechanical gyroscope that prints as one assembled piece. Watch it spin with satisfying precision engineering. A perfect desk toy and conversation starter.',
-    material: 'PLA',
-    price: 550,
-    imageColor: 'from-[#f12711] to-[#f5af19]',
-    type: 'Toy',
-    specs: {
-      dimensions: '8cm diameter',
-      weight: '70g',
-      printTime: '3-4 hours',
-      material: 'Standard PLA'
-    }
-  }
-];
+import { AVAILABLE_COLORS } from '@/lib/catalog';
 
 export default function ProductPage() {
   const params = useParams();
   const router = useRouter();
   const [product, setProduct] = useState(null);
+  const [relatedProducts, setRelatedProducts] = useState([]);
   const [addedToCart, setAddedToCart] = useState(false);
   const [imageHovered, setImageHovered] = useState(false);
   const [zoom, setZoom] = useState({ x: 0, y: 0 });
+  const [colorMode, setColorMode] = useState('Single Color');
+  const [singleColor, setSingleColor] = useState('Black');
   const addDirectItemToCart = useStore((state) => state.addDirectItemToCart);
   const openCart = useStore((state) => state.openCart);
 
   useEffect(() => {
-    const foundProduct = MOCK_PRODUCTS.find((p) => p.id === params.id);
-    setProduct(foundProduct);
+    const loadProduct = async () => {
+      const response = await fetch(`/api/products/${params.id}`);
+      if (!response.ok) {
+        setProduct(null);
+        return;
+      }
+      const data = await response.json();
+      setProduct(data);
+
+      const productsResponse = await fetch('/api/products?includeOutOfStock=1');
+      const allProducts = await productsResponse.json().catch(() => []);
+      if (Array.isArray(allProducts)) {
+        setRelatedProducts(allProducts.filter((item) => item.slug !== data.slug).slice(0, 3));
+      }
+    };
+
+    if (params.id) {
+      loadProduct();
+    }
   }, [params.id]);
 
   const handleAddToCart = () => {
     if (product) {
       addDirectItemToCart({
         fileName: product.name,
-        config: { material: product.material, quality: 'Pre-printed', color: 'As shown', strength: 20 },
+        config: {
+          material: product.material,
+          quality: 'Pre-printed',
+          colorMode,
+          color: colorMode === 'Multicolor' ? 'Multicolor' : singleColor,
+          strength: 20
+        },
         price: product.price
       });
       setAddedToCart(true);
@@ -255,6 +180,11 @@ export default function ProductPage() {
                 </div>
                 <h1 className="text-4xl font-bold text-fg mb-3">{product.name}</h1>
                 <p className="text-fg-muted text-lg mb-6">{product.fullDescription}</p>
+                {!product.inStock && (
+                  <p className="inline-flex px-3 py-1 rounded-full text-sm font-semibold bg-amber-500/15 text-amber-600 border border-amber-500/30">
+                    Currently out of stock
+                  </p>
+                )}
               </div>
 
               {/* Specs */}
@@ -263,19 +193,19 @@ export default function ProductPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <p className="text-fg-subtle text-sm">Dimensions</p>
-                    <p className="text-fg font-medium">{product.specs.dimensions}</p>
+                    <p className="text-fg font-medium">{product.dimensions}</p>
                   </div>
                   <div>
                     <p className="text-fg-subtle text-sm">Weight</p>
-                    <p className="text-fg font-medium">{product.specs.weight}</p>
+                    <p className="text-fg font-medium">{product.weight}</p>
                   </div>
                   <div>
                     <p className="text-fg-subtle text-sm">Print Time</p>
-                    <p className="text-fg font-medium">{product.specs.printTime}</p>
+                    <p className="text-fg font-medium">{product.printTime}</p>
                   </div>
                   <div>
                     <p className="text-fg-subtle text-sm">Material</p>
-                    <p className="text-fg font-medium">{product.specs.material}</p>
+                    <p className="text-fg font-medium">{product.material}</p>
                   </div>
                 </div>
               </div>
@@ -284,6 +214,49 @@ export default function ProductPage() {
               <div className="mb-8">
                 <p className="text-fg-muted text-sm mb-2">Material</p>
                 <p className="text-2xl font-bold text-fg">{product.material}</p>
+              </div>
+
+              {/* Color Option */}
+              <div className="mb-8">
+                <p className="text-fg-muted text-sm mb-3">Color Option</p>
+                <div className="grid grid-cols-2 gap-2 mb-3">
+                  <button
+                    type="button"
+                    onClick={() => setColorMode('Single Color')}
+                    className={`rounded-lg border px-3 py-2 text-sm font-semibold transition-colors ${
+                      colorMode === 'Single Color'
+                        ? 'border-primary-500 bg-primary-500/10 text-fg'
+                        : 'border-surface-border bg-surface-muted text-fg-muted hover:text-fg'
+                    }`}
+                  >
+                    Single Color
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setColorMode('Multicolor')}
+                    className={`rounded-lg border px-3 py-2 text-sm font-semibold transition-colors ${
+                      colorMode === 'Multicolor'
+                        ? 'border-primary-500 bg-primary-500/10 text-fg'
+                        : 'border-surface-border bg-surface-muted text-fg-muted hover:text-fg'
+                    }`}
+                  >
+                    Multicolor
+                  </button>
+                </div>
+
+                {colorMode === 'Single Color' && (
+                  <select
+                    value={singleColor}
+                    onChange={(e) => setSingleColor(e.target.value)}
+                    className="w-full bg-surface-muted border border-surface-border rounded-lg px-4 py-2.5 text-fg text-sm"
+                  >
+                    {AVAILABLE_COLORS.map((color) => (
+                      <option key={color.name} value={color.name}>
+                        {color.name}
+                      </option>
+                    ))}
+                  </select>
+                )}
               </div>
             </div>
 
@@ -295,14 +268,20 @@ export default function ProductPage() {
               </div>
 
               <button
+                disabled={!product.inStock}
                 onClick={handleAddToCart}
                 className={`w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-3 transition-all ${
+                  !product.inStock
+                    ? 'bg-surface-muted text-fg-subtle border border-surface-border cursor-not-allowed'
+                    :
                   addedToCart
                     ? 'bg-surface-muted text-fg border border-primary-500/40'
                     : 'bg-cta hover:opacity-90 text-cta-contrast border border-cta shadow-lg shadow-black/10 dark:shadow-black/40'
                 }`}
               >
-                {addedToCart ? (
+                {!product.inStock ? (
+                  'Out of Stock'
+                ) : addedToCart ? (
                   <>
                     <Check className="w-5 h-5" />
                     Added to Cart
@@ -322,12 +301,10 @@ export default function ProductPage() {
         <div className="mt-16 pt-12 border-t border-surface-border">
           <h2 className="text-2xl font-bold text-fg mb-8">Other Products</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {MOCK_PRODUCTS.filter((p) => p.id !== product.id)
-              .slice(0, 3)
-              .map((p) => (
+            {relatedProducts.map((p) => (
                 <div
                   key={p.id}
-                  onClick={() => router.push(`/products/${p.id}`)}
+                  onClick={() => router.push(`/products/${p.slug}`)}
                   className="bg-surface-card border border-surface-border rounded-2xl overflow-hidden hover:border-primary-500/30 transition-all cursor-pointer group shadow-sm"
                 >
                   <div className={`w-full h-40 relative opacity-80 group-hover:opacity-100 transition-opacity ${p.image ? '' : `bg-gradient-to-br ${p.imageColor}`}`}>

@@ -81,3 +81,9 @@
     @apply bg-surface-bg text-fg antialiased font-sans;
   }
 }
+
+@layer components {
+  .input-field {
+    @apply w-full rounded-lg border border-surface-border bg-surface-muted px-3 py-2.5 text-fg text-sm focus:outline-none focus:border-primary-500;
+  }
+}

@@ -4,6 +4,14 @@ import React from 'react';
 import { Zap, Box, Palette, Layers, ShoppingCart, UploadCloud } from 'lucide-react';
 import { useStore } from '../store/useStore';
 
+const AVAILABLE_COLORS = [
+  { name: 'Black', hex: '#111111' },
+  { name: 'Gray', hex: '#6b7280' },
+  { name: 'Beige', hex: '#d6c4a8' },
+  { name: 'Latte Brown', hex: '#8b6b4a' },
+  { name: 'Ivory White', hex: '#f8f5e9' },
+];
+
 export default function ConfigPanel() {
   const { config, setConfig, selectedFile, mockPrice, addToCart } = useStore();
 
@@ -15,40 +23,77 @@ export default function ConfigPanel() {
       </div>
 
       <div className="space-y-6">
-        {/* Material & Color Grid */}
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <label className="flex items-center gap-2 text-sm font-bold text-fg">
-              <Box className="w-4 h-4 text-primary-500" /> Material
-            </label>
-            <select 
-              value={config.material}
-              onChange={(e) => setConfig({ material: e.target.value })}
-              className="w-full bg-surface-muted border border-surface-border rounded-xl px-4 py-3.5 text-fg appearance-none focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-all text-sm font-semibold shadow-inner"
-              style={{ backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2371717a' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`, backgroundPosition: 'right 0.75rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.25em 1.25em', paddingRight: '2.5rem' }}
+        {/* Material Selection */}
+        <div className="space-y-2">
+          <label className="flex items-center gap-2 text-sm font-bold text-fg">
+            <Box className="w-4 h-4 text-primary-500" /> Material
+          </label>
+          <select 
+            value={config.material}
+            onChange={(e) => setConfig({ material: e.target.value })}
+            className="w-full bg-surface-muted border border-surface-border rounded-xl px-4 py-3.5 text-fg appearance-none focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-all text-sm font-semibold shadow-inner"
+            style={{ backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2371717a' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`, backgroundPosition: 'right 0.75rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.25em 1.25em', paddingRight: '2.5rem' }}
+          >
+            <option value="PLA">PLA</option>
+            <option value="PETG">PETG</option>
+            <option value="ABS">ABS</option>
+            <option value="TPU">TPU</option>
+          </select>
+        </div>
+
+        {/* Color Options */}
+        <div className="space-y-3">
+          <label className="flex items-center gap-2 text-sm font-bold text-fg">
+            <Palette className="w-4 h-4 text-primary-500" /> Color Option
+          </label>
+
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={() => setConfig({ colorMode: 'Single Color' })}
+              className={`rounded-lg border px-3 py-2 text-sm font-semibold transition-colors ${
+                config.colorMode !== 'Multicolor'
+                  ? 'border-primary-500 bg-primary-500/10 text-fg'
+                  : 'border-surface-border bg-surface-muted text-fg-muted hover:text-fg'
+              }`}
             >
-              <option value="PLA">PLA</option>
-              <option value="ABS">ABS</option>
-              <option value="PETG">PETG</option>
-            </select>
-          </div>
-          
-          <div className="space-y-2">
-            <label className="flex items-center gap-2 text-sm font-bold text-fg">
-              <Palette className="w-4 h-4 text-primary-500" /> Color
-            </label>
-            <select 
-              value={config.color}
-              onChange={(e) => setConfig({ color: e.target.value })}
-              className="w-full bg-surface-muted border border-surface-border rounded-xl px-4 py-3.5 text-fg appearance-none focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-all text-sm font-semibold shadow-inner"
-              style={{ backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2371717a' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`, backgroundPosition: 'right 0.75rem center', backgroundRepeat: 'no-repeat', backgroundSize: '1.25em 1.25em', paddingRight: '2.5rem' }}
+              Single Color
+            </button>
+            <button
+              type="button"
+              onClick={() => setConfig({ colorMode: 'Multicolor', color: 'Multicolor' })}
+              className={`rounded-lg border px-3 py-2 text-sm font-semibold transition-colors ${
+                config.colorMode === 'Multicolor'
+                  ? 'border-primary-500 bg-primary-500/10 text-fg'
+                  : 'border-surface-border bg-surface-muted text-fg-muted hover:text-fg'
+              }`}
             >
-              <option value="Black">Black</option>
-              <option value="White">White</option>
-              <option value="Red">Red</option>
-              <option value="Blue">Blue</option>
-            </select>
+              Multicolor
+            </button>
           </div>
+
+          {config.colorMode !== 'Multicolor' && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {AVAILABLE_COLORS.map((color) => (
+                <button
+                  key={color.name}
+                  type="button"
+                  onClick={() => setConfig({ colorMode: 'Single Color', color: color.name })}
+                  className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors ${
+                    config.color === color.name
+                      ? 'border-primary-500 bg-primary-500/10 text-fg'
+                      : 'border-surface-border bg-surface-muted text-fg-muted hover:text-fg'
+                  }`}
+                >
+                  <span
+                    className="w-3 h-3 rounded-full border border-black/20"
+                    style={{ backgroundColor: color.hex }}
+                  />
+                  {color.name}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Quality Dropdown */}

@@ -6,7 +6,7 @@ import { RefreshCcw, ShieldCheck } from 'lucide-react';
 
 export default function Hero() {
   return (
-    <div className="py-12 sm:py-16 w-full">
+    <div className="py-2 sm:py-6 w-full">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         
         {/* Left Col: Text & Headings */}

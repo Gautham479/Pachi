@@ -52,6 +52,7 @@ export default function CartDrawer() {
                   <div className="grid grid-cols-2 gap-y-1 text-xs text-fg-muted">
                     <p>Material: <span className="text-fg font-medium">{item.config.material}</span></p>
                     <p>Color: <span className="text-fg font-medium">{item.config.color}</span></p>
+                    <p>Color Type: <span className="text-fg font-medium">{item.config.colorMode || 'Single Color'}</span></p>
                     <p>Quality: <span className="text-fg font-medium">{item.config.quality.split(' ')[0]}</span></p>
                     <p>Strength: <span className="text-fg font-medium">{item.config.strength}%</span></p>
                   </div>
@@ -71,6 +72,9 @@ export default function CartDrawer() {
         {/* Footer Checkout */}
         {cart.length > 0 && (
           <div className="border-t border-surface-border/50 bg-surface-card p-6 pb-8 md:pb-6">
+            <p className="text-xs text-fg-muted mb-4">
+              Build volume: 256 - 256 - 256
+            </p>
             <div className="flex items-center justify-between mb-6">
               <span className="text-fg-muted font-medium text-lg">Total Cost</span>
               <span className="text-3xl text-fg font-black">₹{totalCost}</span>

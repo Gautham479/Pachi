@@ -4,7 +4,7 @@ import { Check, X, Zap } from 'lucide-react';
 export default function Features() {
   const materials = [
     {
-      name: "PET (Basic & Lightweight)",
+      name: "PLA (Basic & Lightweight)",
       emoji: "🔹",
       points: [
         { text: "Best for display parts, prototypes, or light use", type: "normal" },
@@ -18,7 +18,7 @@ export default function Features() {
       emoji: "🔹",
       points: [
         { text: "Strong and durable for everyday use", type: "normal" },
-        { text: "Can handle sunlight and outdoor conditions better than PET", type: "positive" },
+        { text: "Can handle sunlight and outdoor conditions better than PLA", type: "positive" },
         { text: "Water-resistant and long-lasting", type: "positive" },
         { text: "Safe for basic electrical enclosures (non-conductive)", type: "positive" },
         { text: "Best choice for most customers", type: "tip" }
@@ -52,7 +52,7 @@ export default function Features() {
     { question: "High heat?", answer: "ABS" },
     { question: "Electrical use?", answer: "PETG or ABS" },
     { question: "Flexible part?", answer: "TPU" },
-    { question: "Budget / basic use?", answer: "PET" }
+    { question: "Budget / basic use?", answer: "PLA" }
   ];
 
   const getIcon = (type) => {

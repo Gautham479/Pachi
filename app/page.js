@@ -40,8 +40,15 @@ export default function Home() {
         <ScrollToSection />
       </Suspense>
       
+      {/* Top headline in empty space */}
+      <section className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 text-center">
+        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-fg tracking-tight leading-tight">
+          Where Your Ideas <span className="text-primary-500">Become Reality</span>
+        </h1>
+      </section>
+
       {/* Hero Section */}
-      <section id="hero" className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
+      <section id="hero" className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-2 pb-8 sm:pt-4 sm:pb-10">
         <Hero />
       </section>
 

@@ -1,90 +1,77 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ShoppingCart } from 'lucide-react';
 import { useStore } from '@/store/useStore';
 import { motion } from 'framer-motion';
-
-const MOCK_PRODUCTS = [
-  {
-    id: 'p1',
-    name: 'Articulated Dragon',
-    description: 'A fully flexible printed dragon with stunning details.',
-    material: 'Silk',
-    price: 1599,
-    image: '/products/dragon.png',
-    imageColor: 'from-[#ff7e5f] to-[#feb47b]',
-    type: 'Collectible'
-  },
-  {
-    id: 'p2',
-    name: 'Minimalist Headphone Stand',
-    description: 'Sleek geometric design to keep your desk organized.',
-    material: 'Matte PETG',
-    price: 999,
-    image: '/products/headphone-stand.png',
-    imageColor: 'from-[#2193b0] to-[#6dd5ed]',
-    type: 'Desk Accessory'
-  },
-  {
-    id: 'p3',
-    name: 'Topology Planter',
-    description: 'Mathematical topological surface designed for indoor plants.',
-    material: 'Wood-fill PLA',
-    price: 2499,
-    image: '/products/planter.png',
-    imageColor: 'from-[#11998e] to-[#38ef7d]',
-    type: 'Home Decor'
-  },
-  {
-    id: 'p4',
-    name: 'Ergonomic Macropad Case',
-    description: 'Custom 3D printed case for 9-key mechanical macropads.',
-    material: 'ABS',
-    price: 850,
-    imageColor: 'from-[#bdc3c7] to-[#2c3e50]',
-    type: 'Tech Accessory'
-  },
-  {
-    id: 'p5',
-    name: 'Voronoi Pen Holder',
-    description: 'Abstract voronoi patterned desk accessory.',
-    material: 'Resin',
-    price: 1200,
-    imageColor: 'from-[#8e2de2] to-[#4a00e0]',
-    type: 'Home Decor'
-  },
-  {
-    id: 'p6',
-    name: 'Mechanical Gyroscope',
-    description: 'Print-in-place moving mechanical toy.',
-    material: 'PLA',
-    price: 550,
-    imageColor: 'from-[#f12711] to-[#f5af19]',
-    type: 'Toy'
-  }
-];
-
-const PRODUCT_TYPES = ['All', 'Collectible', 'Desk Accessory', 'Home Decor', 'Tech Accessory', 'Toy'];
+import { AVAILABLE_COLORS, PRODUCT_TYPES } from '@/lib/catalog';
 
 export default function ProductsGrid() {
   const [selectedType, setSelectedType] = useState('All');
+  const [productColorOptions, setProductColorOptions] = useState({});
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
   const addDirectItemToCart = useStore((state) => state.addDirectItemToCart);
   const openCart = useStore((state) => state.openCart);
+  const searchQuery = useStore((state) => state.searchQuery);
+  const filters = ['All', ...PRODUCT_TYPES];
 
-  const filteredProducts = selectedType === 'All' 
-    ? MOCK_PRODUCTS 
-    : MOCK_PRODUCTS.filter((p) => p.type === selectedType);
+  useEffect(() => {
+    const loadProducts = async () => {
+      setLoading(true);
+      const response = await fetch('/api/products?includeOutOfStock=1');
+      const data = await response.json().catch(() => []);
+      setProducts(Array.isArray(data) ? data : []);
+      setLoading(false);
+    };
+
+    loadProducts();
+  }, []);
+
+  const activeType = searchQuery.trim() ? 'All' : selectedType;
+
+  const filteredProducts = products.filter((product) => {
+    const typeMatches = activeType === 'All' || product.type === activeType;
+    const normalizedQuery = searchQuery.trim().toLowerCase();
+    const queryMatches =
+      normalizedQuery.length === 0 ||
+      product.name.toLowerCase().includes(normalizedQuery) ||
+      product.description.toLowerCase().includes(normalizedQuery) ||
+      product.type.toLowerCase().includes(normalizedQuery);
+
+    return typeMatches && queryMatches;
+  });
 
   const handleAddToCart = (product) => {
+    const productOption = productColorOptions[product.id] || {
+      colorMode: 'Single Color',
+      color: AVAILABLE_COLORS[0].name,
+    };
+
     addDirectItemToCart({
       fileName: product.name,
-      config: { material: product.material, quality: 'Pre-printed', color: 'As shown', strength: 20 },
+      config: {
+        material: product.material,
+        quality: 'Pre-printed',
+        colorMode: productOption.colorMode,
+        color: productOption.colorMode === 'Multicolor' ? 'Multicolor' : productOption.color,
+        strength: 20
+      },
       price: product.price
     });
     openCart();
+  };
+
+  const updateProductColorOption = (productId, updates) => {
+    setProductColorOptions((prev) => {
+      const current = prev[productId] || { colorMode: 'Single Color', color: AVAILABLE_COLORS[0].name };
+      return {
+        ...prev,
+        [productId]: { ...current, ...updates },
+      };
+    });
   };
 
   return (
@@ -92,12 +79,12 @@ export default function ProductsGrid() {
       {/* Horizontal Product Types Filter */}
       <div className="mb-10 overflow-x-auto pb-2">
         <div className="flex gap-3">
-          {PRODUCT_TYPES.map((type) => (
+          {filters.map((type) => (
             <button
               key={type}
               onClick={() => setSelectedType(type)}
               className={`px-4 py-2 rounded-full font-medium whitespace-nowrap transition-all ${
-                selectedType === type
+                activeType === type
                   ? 'bg-cta text-cta-contrast shadow-md shadow-black/10 dark:shadow-black/40'
                   : 'bg-surface-muted text-fg-muted hover:text-fg border border-surface-border hover:border-primary-500/30'
               }`}
@@ -109,6 +96,9 @@ export default function ProductsGrid() {
       </div>
 
       {/* Products Grid */}
+      {loading ? (
+        <p className="text-fg-muted">Loading products...</p>
+      ) : (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredProducts.map((product, idx) => (
           <motion.div 
@@ -118,7 +108,7 @@ export default function ProductsGrid() {
             transition={{ delay: idx * 0.1, duration: 0.5 }}
             className="flex flex-col"
           >
-            <Link href={`/products/${product.id}`}>
+            <Link href={`/products/${product.slug}`}>
               <div className="bg-surface-card border border-surface-border rounded-2xl overflow-hidden hover:border-primary-500/30 transition-all group flex flex-col h-full cursor-pointer transform hover:scale-105">
                 {/* Product Image */}
                 <div className="w-full h-48 relative opacity-90 group-hover:opacity-100 transition-opacity bg-surface-muted overflow-hidden">
@@ -150,13 +140,71 @@ export default function ProductsGrid() {
                   
                   <p className="text-fg-muted text-sm mb-4 flex-grow">{product.description}</p>
                   
-                  <div className="flex items-center gap-2 mb-6">
+                  <div className="flex items-center gap-2 mb-4">
                     <span className="px-2 py-1 bg-surface-muted rounded text-xs text-fg-muted font-medium border border-surface-border">
                       {product.material}
                     </span>
                     <span className="px-2 py-1 bg-surface-muted rounded text-xs text-fg-muted font-medium border border-surface-border">
                       {product.type}
                     </span>
+                    {!product.inStock && (
+                      <span className="px-2 py-1 bg-amber-500/15 rounded text-xs text-amber-600 font-semibold border border-amber-500/30">
+                        Out of Stock
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          updateProductColorOption(product.id, { colorMode: 'Single Color', color: productColorOptions[product.id]?.color || AVAILABLE_COLORS[0].name });
+                        }}
+                        className={`text-xs rounded-md border px-2 py-1.5 font-semibold ${
+                          (productColorOptions[product.id]?.colorMode || 'Single Color') === 'Single Color'
+                            ? 'border-primary-500 bg-primary-500/10 text-fg'
+                            : 'border-surface-border bg-surface-muted text-fg-muted'
+                        }`}
+                      >
+                        Single Color
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          updateProductColorOption(product.id, { colorMode: 'Multicolor', color: 'Multicolor' });
+                        }}
+                        className={`text-xs rounded-md border px-2 py-1.5 font-semibold ${
+                          (productColorOptions[product.id]?.colorMode || 'Single Color') === 'Multicolor'
+                            ? 'border-primary-500 bg-primary-500/10 text-fg'
+                            : 'border-surface-border bg-surface-muted text-fg-muted'
+                        }`}
+                      >
+                        Multicolor
+                      </button>
+                    </div>
+
+                    {(productColorOptions[product.id]?.colorMode || 'Single Color') === 'Single Color' && (
+                      <select
+                        value={productColorOptions[product.id]?.color || AVAILABLE_COLORS[0].name}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                        }}
+                        onChange={(e) => updateProductColorOption(product.id, { colorMode: 'Single Color', color: e.target.value })}
+                        className="w-full bg-surface-muted border border-surface-border rounded-md px-2 py-1.5 text-xs text-fg"
+                      >
+                        {AVAILABLE_COLORS.map((color) => (
+                          <option key={color.name} value={color.name}>
+                            {color.name}
+                          </option>
+                        ))}
+                      </select>
+                    )}
                   </div>
                 </div>
               </div>
@@ -164,19 +212,25 @@ export default function ProductsGrid() {
 
             {/* Add to Cart Button */}
             <button 
+              disabled={!product.inStock}
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 handleAddToCart(product);
               }}
-              className="w-full py-2.5 rounded-lg bg-cta hover:opacity-90 text-cta-contrast font-semibold transition-all flex items-center justify-center gap-2 text-sm mt-3 shadow-md shadow-black/10 dark:shadow-black/40"
+              className={`w-full py-2.5 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 text-sm mt-3 shadow-md shadow-black/10 dark:shadow-black/40 ${
+                product.inStock
+                  ? 'bg-cta hover:opacity-90 text-cta-contrast'
+                  : 'bg-surface-muted text-fg-subtle border border-surface-border cursor-not-allowed shadow-none'
+              }`}
             >
               <ShoppingCart className="w-4 h-4" />
-              Add to Cart
+              {product.inStock ? 'Add to Cart' : 'Out of Stock'}
             </button>
           </motion.div>
         ))}
       </div>
+      )}
     </div>
   );
 }
