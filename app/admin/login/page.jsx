@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 export default function AdminLoginPage() {
@@ -9,6 +10,7 @@ export default function AdminLoginPage() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showResetHint, setShowResetHint] = useState(false);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -37,6 +39,24 @@ export default function AdminLoginPage() {
       <div className="w-full max-w-md bg-surface-card border border-surface-border rounded-2xl p-8 shadow-xl">
         <h1 className="text-2xl font-bold text-fg mb-2">Admin Login</h1>
         <p className="text-fg-muted mb-6 text-sm">Manage products without editing code.</p>
+        <div className="mb-6 flex items-center justify-between text-sm">
+          <Link href="/" className="text-fg-muted hover:text-fg underline underline-offset-4">
+            Back to homepage
+          </Link>
+          <button
+            type="button"
+            onClick={() => setShowResetHint((prev) => !prev)}
+            className="text-fg-muted hover:text-fg underline underline-offset-4"
+          >
+            Forgot password?
+          </button>
+        </div>
+
+        {showResetHint ? (
+          <p className="text-xs text-fg-muted mb-4">
+            Reset by updating `ADMIN_PASSWORD` in your deployment environment variables, then redeploy.
+          </p>
+        ) : null}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>

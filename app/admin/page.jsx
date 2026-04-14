@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { MATERIAL_TYPES, PRODUCT_TYPES } from '@/lib/catalog';
+import Link from 'next/link';
 
 const EMPTY_FORM = {
   name: '',
@@ -129,9 +130,14 @@ export default function AdminDashboardPage() {
               Total: {products.length} products | In stock: {inStockCount}
             </p>
           </div>
-          <button onClick={logout} className="px-4 py-2 rounded-lg bg-surface-card border border-surface-border text-fg">
-            Logout
-          </button>
+          <div className="flex items-center gap-2">
+            <Link href="/" className="px-4 py-2 rounded-lg bg-surface-card border border-surface-border text-fg">
+              Back to Homepage
+            </Link>
+            <button onClick={logout} className="px-4 py-2 rounded-lg bg-surface-card border border-surface-border text-fg">
+              Logout
+            </button>
+          </div>
         </div>
 
         <section className="bg-surface-card border border-surface-border rounded-2xl p-6">

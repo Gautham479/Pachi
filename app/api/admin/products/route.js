@@ -25,13 +25,20 @@ export async function GET() {
   const unauthorized = await requireAdmin();
   if (unauthorized) return unauthorized;
 
-  await ensureProductsSeeded();
+  try {
+    await ensureProductsSeeded();
 
-  const products = await prisma.product.findMany({
-    orderBy: { createdAt: 'asc' },
-  });
+    const products = await prisma.product.findMany({
+      orderBy: { createdAt: 'asc' },
+    });
 
-  return NextResponse.json(products);
+    return NextResponse.json(products);
+  } catch {
+    return NextResponse.json(
+      { error: 'Database not available on this deployment. Please configure a hosted database.' },
+      { status: 500 }
+    );
+  }
 }
 
 export async function POST(request) {
@@ -88,25 +95,40 @@ export async function POST(request) {
     slug = `${baseSlug}-${suffix}`;
   }
 
-  const uploadedImagePath = await saveProductImage(imageFile);
+  let uploadedImagePath = '';
+  try {
+    uploadedImagePath = await saveProductImage(imageFile);
+  } catch {
+    return NextResponse.json(
+      { error: 'Image upload failed. Check Supabase Storage env vars and bucket policy.' },
+      { status: 500 }
+    );
+  }
 
-  const created = await prisma.product.create({
-    data: {
-      slug,
-      name: body.name.trim(),
-      description: body.description.trim(),
-      fullDescription: body.fullDescription.trim(),
-      material: body.material,
-      price,
-      image: uploadedImagePath,
-      imageColor: body.imageColor || 'from-[#6366f1] to-[#8b5cf6]',
-      type: body.type,
-      dimensions: body.dimensions || 'N/A',
-      weight: body.weight || 'N/A',
-      printTime: body.printTime || 'N/A',
-      inStock: body.inStock !== false,
-    },
-  });
+  try {
+    const created = await prisma.product.create({
+      data: {
+        slug,
+        name: body.name.trim(),
+        description: body.description.trim(),
+        fullDescription: body.fullDescription.trim(),
+        material: body.material,
+        price,
+        image: uploadedImagePath,
+        imageColor: body.imageColor || 'from-[#6366f1] to-[#8b5cf6]',
+        type: body.type,
+        dimensions: body.dimensions || 'N/A',
+        weight: body.weight || 'N/A',
+        printTime: body.printTime || 'N/A',
+        inStock: body.inStock !== false,
+      },
+    });
 
-  return NextResponse.json(created, { status: 201 });
+    return NextResponse.json(created, { status: 201 });
+  } catch {
+    return NextResponse.json(
+      { error: 'Database write failed. Check SUPABASE Postgres DATABASE_URL in deployment env.' },
+      { status: 500 }
+    );
+  }
 }

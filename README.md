@@ -1,10 +1,28 @@
 ## Getting Started
 
-Install dependencies and run the development server:
+Install dependencies:
 
 ```bash
 npm install
-npx prisma migrate dev
+```
+
+Set env vars in `.env` (Supabase):
+
+```env
+DATABASE_URL="postgresql://postgres:YOUR_PASSWORD@db.YOUR_PROJECT_REF.supabase.co:5432/postgres?sslmode=require"
+SUPABASE_URL="https://YOUR_PROJECT_REF.supabase.co"
+SUPABASE_SERVICE_ROLE_KEY="YOUR_SUPABASE_SERVICE_ROLE_KEY"
+SUPABASE_STORAGE_BUCKET="product-images"
+ADMIN_USERNAME="admin"
+ADMIN_PASSWORD="admin123"
+ADMIN_SESSION_TOKEN="change-me-admin-session-token"
+```
+
+Apply schema and run:
+
+```bash
+npx prisma db push
+npx prisma generate
 npm run dev
 ```
 
@@ -18,15 +36,6 @@ Use the admin panel to add/remove products and mark products in stock/out of sto
 2. Log in with credentials from `.env`
 3. Manage products from the dashboard (no code changes required)
 
-Default local env values:
-
-```env
-ADMIN_USERNAME="admin"
-ADMIN_PASSWORD="admin123"
-ADMIN_SESSION_TOKEN="change-me-admin-session-token"
-DATABASE_URL="file:./dev.db"
-```
-
 ## API
 
 - Public products: `GET /api/products`
@@ -39,3 +48,4 @@ DATABASE_URL="file:./dev.db"
 
 - First API read seeds the database with default products if empty.
 - Keep `ADMIN_SESSION_TOKEN` strong in production.
+- In Supabase Storage, create bucket `product-images` and mark it public (or configure signed URL flow).
