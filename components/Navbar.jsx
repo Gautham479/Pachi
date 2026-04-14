@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Rocket, Search, ShoppingCart } from 'lucide-react';
+import { Lock, Rocket, Search, ShoppingCart } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import ThemeToggle from './ThemeToggle';
 
@@ -104,6 +104,13 @@ export default function Navbar() {
 
             {/* Right Actions */}
             <div className="flex items-center gap-3 sm:gap-5">
+              <button
+                onClick={() => router.push('/admin/login')}
+                className="hidden sm:flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full border border-surface-border bg-surface-card text-fg-muted hover:text-fg hover:border-primary-500/40 transition-colors"
+              >
+                <Lock className="w-3.5 h-3.5" />
+                Admin Login
+              </button>
               <div className="hidden md:flex items-center gap-2 bg-surface-card border border-surface-border rounded-full px-3 py-2 w-72">
                 <Search className="w-4 h-4 text-fg-muted" />
                 <input

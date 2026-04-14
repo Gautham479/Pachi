@@ -22,6 +22,7 @@ const EMPTY_FORM = {
 export default function AdminDashboardPage() {
   const [products, setProducts] = useState([]);
   const [form, setForm] = useState(EMPTY_FORM);
+  const [imageFile, setImageFile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -55,13 +56,26 @@ export default function AdminDashboardPage() {
     setSaving(true);
     setError('');
 
+    const payload = new FormData();
+    payload.set('name', form.name);
+    payload.set('slug', form.slug);
+    payload.set('description', form.description);
+    payload.set('fullDescription', form.fullDescription);
+    payload.set('material', form.material);
+    payload.set('price', String(Number(form.price)));
+    payload.set('type', form.type);
+    payload.set('imageColor', form.imageColor);
+    payload.set('dimensions', form.dimensions);
+    payload.set('weight', form.weight);
+    payload.set('printTime', form.printTime);
+    payload.set('inStock', String(form.inStock));
+    if (imageFile) {
+      payload.set('imageFile', imageFile);
+    }
+
     const response = await fetch('/api/admin/products', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        ...form,
-        price: Number(form.price),
-      }),
+      body: payload,
     });
 
     if (!response.ok) {
@@ -72,6 +86,7 @@ export default function AdminDashboardPage() {
     }
 
     setForm(EMPTY_FORM);
+    setImageFile(null);
     await fetchProducts();
     setSaving(false);
   };
@@ -133,7 +148,15 @@ export default function AdminDashboardPage() {
               {MATERIAL_TYPES.map((material) => <option key={material} value={material}>{material}</option>)}
             </select>
             <input className="input-field" type="number" placeholder="Price" value={form.price} onChange={(e) => updateField('price', e.target.value)} required />
-            <input className="input-field" placeholder="Image URL (/products/...png)" value={form.image} onChange={(e) => updateField('image', e.target.value)} />
+            <div>
+              <label className="block text-xs text-fg-muted mb-1">Product Image</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setImageFile(e.target.files?.[0] || null)}
+                className="input-field"
+              />
+            </div>
             <input className="input-field" placeholder="Image gradient classes" value={form.imageColor} onChange={(e) => updateField('imageColor', e.target.value)} />
             <input className="input-field" placeholder="Dimensions" value={form.dimensions} onChange={(e) => updateField('dimensions', e.target.value)} />
             <input className="input-field" placeholder="Weight" value={form.weight} onChange={(e) => updateField('weight', e.target.value)} />

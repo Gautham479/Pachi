@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { isAdminAuthenticated } from '@/lib/adminAuth';
 import { ensureProductsSeeded } from '@/lib/productService';
 import { MATERIAL_TYPES, PRODUCT_TYPES } from '@/lib/catalog';
+import { saveProductImage } from '@/lib/uploadImage';
 
 function slugify(value) {
   return value
@@ -37,10 +38,27 @@ export async function POST(request) {
   const unauthorized = await requireAdmin();
   if (unauthorized) return unauthorized;
 
-  const body = await request.json().catch(() => null);
-  if (!body) {
+  const formData = await request.formData().catch(() => null);
+  if (!formData) {
     return NextResponse.json({ error: 'Invalid payload' }, { status: 400 });
   }
+
+  const body = {
+    name: String(formData.get('name') || '').trim(),
+    slug: String(formData.get('slug') || '').trim(),
+    description: String(formData.get('description') || '').trim(),
+    fullDescription: String(formData.get('fullDescription') || '').trim(),
+    material: String(formData.get('material') || '').trim(),
+    price: String(formData.get('price') || '').trim(),
+    type: String(formData.get('type') || '').trim(),
+    imageColor: String(formData.get('imageColor') || '').trim(),
+    dimensions: String(formData.get('dimensions') || '').trim(),
+    weight: String(formData.get('weight') || '').trim(),
+    printTime: String(formData.get('printTime') || '').trim(),
+    inStock: String(formData.get('inStock') || 'true') === 'true',
+  };
+
+  const imageFile = formData.get('imageFile');
 
   const requiredFields = ['name', 'description', 'fullDescription', 'material', 'price', 'type'];
   for (const field of requiredFields) {
@@ -70,6 +88,8 @@ export async function POST(request) {
     slug = `${baseSlug}-${suffix}`;
   }
 
+  const uploadedImagePath = await saveProductImage(imageFile);
+
   const created = await prisma.product.create({
     data: {
       slug,
@@ -78,7 +98,7 @@ export async function POST(request) {
       fullDescription: body.fullDescription.trim(),
       material: body.material,
       price,
-      image: body.image || '',
+      image: uploadedImagePath,
       imageColor: body.imageColor || 'from-[#6366f1] to-[#8b5cf6]',
       type: body.type,
       dimensions: body.dimensions || 'N/A',
