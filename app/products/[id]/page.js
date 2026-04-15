@@ -3,8 +3,9 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
-import { ArrowLeft, ShoppingCart, Check } from 'lucide-react';
+import { ArrowLeft, ShoppingCart, Check, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useStore } from '@/store/useStore';
+import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import CartDrawer from '@/components/CartDrawer';
@@ -29,6 +30,21 @@ export default function ProductPage() {
   const [singleColor, setSingleColor] = useState('Black');
   const addDirectItemToCart = useStore((state) => state.addDirectItemToCart);
   const openCart = useStore((state) => state.openCart);
+
+  const images = getProductImages(product);
+  const currentImageIndex = images.indexOf(selectedImage);
+
+  const handleNextImage = (e) => {
+    e.stopPropagation();
+    const nextIndex = (currentImageIndex + 1) % images.length;
+    setSelectedImage(images[nextIndex]);
+  };
+
+  const handlePrevImage = (e) => {
+    e.stopPropagation();
+    const prevIndex = (currentImageIndex - 1 + images.length) % images.length;
+    setSelectedImage(images[prevIndex]);
+  };
 
   useEffect(() => {
     const loadProduct = async () => {
@@ -115,70 +131,90 @@ export default function ProductPage() {
           {/* Left Column: Image & Thumbnails */}
           <div className="flex flex-col gap-4 w-full">
             {/* Product Image with Zoom Preview */}
-            <div className="flex items-center justify-center relative overflow-visible w-full">
-            <div 
-              onMouseEnter={() => setImageHovered(true)}
-              onMouseLeave={() => {
-                setImageHovered(false);
-                setZoom({ x: 0, y: 0 });
-              }}
-              onMouseMove={handleImageMouseMove}
-              className="w-full max-w-md aspect-[4/3] rounded-2xl shadow-2xl relative overflow-hidden cursor-zoom-in bg-surface-muted"
-            >
-              {selectedImage ? (
-                <Image
-                  src={selectedImage}
-                  alt={product.name}
-                  fill
-                  className="object-contain w-full h-full p-3"
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                  priority
-                />
-              ) : (
-                <>
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#ff7e5f] to-[#feb47b]" />
-                  <div className="absolute inset-0 bg-black/10" />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-white/70 font-medium tracking-widest uppercase text-lg drop-shadow-lg">
-                      3D Model Preview
+            <div className="flex items-center justify-center relative overflow-visible w-full group">
+              <div 
+                onMouseEnter={() => setImageHovered(true)}
+                onMouseLeave={() => {
+                  setImageHovered(false);
+                  setZoom({ x: 0, y: 0 });
+                }}
+                onMouseMove={handleImageMouseMove}
+                className="w-full max-w-xl aspect-[4/3] rounded-3xl shadow-2xl relative overflow-hidden cursor-zoom-in bg-surface-muted border border-surface-border transition-transform duration-500 hover:scale-[1.01]"
+              >
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={selectedImage}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 1.05 }}
+                    transition={{ duration: 0.3 }}
+                    className="w-full h-full relative"
+                  >
+                    {selectedImage ? (
+                      <Image
+                        src={selectedImage}
+                        alt={product.name}
+                        fill
+                        className="object-contain w-full h-full p-4"
+                        sizes="(max-width: 1024px) 100vw, 50vw"
+                        priority
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-surface-muted animate-pulse" />
+                    )}
+                  </motion.div>
+                </AnimatePresence>
+                
+                {/* Navigation Arrows */}
+                {images.length > 1 && (
+                  <>
+                    <button
+                      onClick={handlePrevImage}
+                      className="absolute left-4 top-1/2 -translate-y-1/2 bg-surface-bg/80 backdrop-blur-sm p-3 rounded-full text-fg hover:bg-primary-500 hover:text-white transition-all opacity-0 group-hover:opacity-100 shadow-lg border border-surface-border"
+                    >
+                      <ChevronLeft className="w-6 h-6" />
+                    </button>
+                    <button
+                      onClick={handleNextImage}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 bg-surface-bg/80 backdrop-blur-sm p-3 rounded-full text-fg hover:bg-primary-500 hover:text-white transition-all opacity-0 group-hover:opacity-100 shadow-lg border border-surface-border"
+                    >
+                      <ChevronRight className="w-6 h-6" />
+                    </button>
+                  </>
+                )}
+                
+                {!imageHovered && (
+                  <div className="absolute inset-0 flex items-end justify-center pb-6">
+                    <span className="text-white/80 text-sm font-medium bg-black/50 backdrop-blur-md px-6 py-2.5 rounded-full border border-white/20">
+                      Hover to zoom
                     </span>
                   </div>
-                </>
-              )}
-              
-              {!imageHovered && (
-                <div className="absolute inset-0 flex items-end justify-center pb-4">
-                  <span className="text-white/60 text-sm font-medium bg-black/40 px-4 py-2 rounded-full">
-                    Hover to zoom
-                  </span>
+                )}
+              </div>
+
+              {/* Zoom Preview Panel - Larger and Better Aligned */}
+              {imageHovered && selectedImage && (
+                <div className="absolute top-0 rounded-3xl shadow-3xl overflow-hidden bg-surface-muted border-2 border-primary-500 pointer-events-none z-50 w-[500px] h-[500px] hidden lg:block"
+                  style={{ left: 'calc(100% + 2rem)' }}
+                >
+                  <Image
+                    src={selectedImage}
+                    alt={`${product.name} zoomed`}
+                    fill
+                    className="object-cover w-full h-full"
+                    style={{
+                      transform: 'scale(2.5)',
+                      transformOrigin: `${zoom.x}% ${zoom.y}%`,
+                      transition: 'transform 0.05s ease-out'
+                    }}
+                    sizes="500px"
+                  />
+                  <div className="absolute top-4 right-4 bg-primary-500 text-white text-sm font-bold px-4 py-2 rounded-full shadow-lg">
+                    2.5x Zoom
+                  </div>
                 </div>
               )}
             </div>
-
-            {/* Zoom Preview Panel - Larger and Better Aligned */}
-            {imageHovered && selectedImage && (
-              <div className="absolute top-0 rounded-2xl shadow-2xl overflow-hidden bg-surface-muted border-2 border-cta pointer-events-none z-50 w-96 h-96"
-                style={{ left: 'calc(100% + 1.5rem)' }}
-              >
-                <Image
-                  src={selectedImage}
-                  alt={`${product.name} zoomed`}
-                  fill
-                  className="object-cover w-full h-full"
-                  style={{
-                    transform: 'scale(2.5)',
-                    transformOrigin: `${zoom.x}% ${zoom.y}%`,
-                    transition: 'transform 0.05s ease-out'
-                  }}
-                  sizes="384px"
-                />
-                {/* Zoom level indicator */}
-                <div className="absolute top-4 right-4 bg-surface-card/95 text-fg text-sm font-bold px-4 py-2 rounded-full border-2 border-cta shadow-lg">
-                  2.5x
-                </div>
-              </div>
-            )}
-          </div>
           
           {/* Thumbnails */}
           {getProductImages(product).length > 1 && (

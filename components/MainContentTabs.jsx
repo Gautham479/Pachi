@@ -9,7 +9,8 @@ import { PackageSearch, PenTool } from 'lucide-react';
 import { useStore } from '@/store/useStore';
 
 export default function MainContentTabs() {
-  const [activeTab, setActiveTab] = useState('products'); // 'products' or 'custom'
+  const activeTab = useStore((state) => state.activeTab);
+  const setActiveTab = useStore((state) => state.setActiveTab);
   const searchQuery = useStore((state) => state.searchQuery);
   const visibleTab = searchQuery.trim() ? 'products' : activeTab;
 
@@ -17,7 +18,7 @@ export default function MainContentTabs() {
     <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 mb-24 flex flex-col items-center">
       
       {/* Sleek Segmented Control */}
-      <div className="bg-surface-muted/90 dark:bg-surface-card/80 backdrop-blur-xl border border-surface-border p-1.5 rounded-2xl flex items-center mb-10 mx-auto sticky top-[90px] z-40 shadow-sm">
+      <div id="content" className="bg-surface-muted/90 dark:bg-surface-card/80 backdrop-blur-xl border border-surface-border p-1.5 rounded-2xl flex items-center mb-10 mx-auto sticky top-[90px] z-40 shadow-sm">
         <button
           onClick={() => setActiveTab('products')}
           className={`relative px-6 py-2.5 rounded-xl text-sm font-medium transition-colors flex items-center justify-center gap-2 min-w-[160px] ${
@@ -79,6 +80,7 @@ export default function MainContentTabs() {
           ) : (
             <motion.div
               key="custom"
+              id="quote"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}

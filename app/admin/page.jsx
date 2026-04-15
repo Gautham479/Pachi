@@ -31,6 +31,10 @@ export default function AdminDashboardPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortKey, setSortKey] = useState('createdAt');
+  const [sortOrder, setSortOrder] = useState('desc');
+  const [selectedProductIds, setSelectedProductIds] = useState([]);
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -64,6 +68,52 @@ export default function AdminDashboardPage() {
   }, []);
 
   const inStockCount = useMemo(() => products.filter((product) => product.inStock).length, [products]);
+
+  const filteredProducts = useMemo(() => {
+    return products.filter((p) => {
+      if (!searchQuery) return true;
+      const q = searchQuery.toLowerCase();
+      return (p.name?.toLowerCase() || '').includes(q) || 
+             (p.description?.toLowerCase() || '').includes(q) ||
+             (p.type?.toLowerCase() || '').includes(q) ||
+             (p.material?.toLowerCase() || '').includes(q);
+    }).sort((a, b) => {
+      let valA, valB;
+      if (sortKey === 'createdAt') { valA = new Date(a.createdAt || 0).getTime(); valB = new Date(b.createdAt || 0).getTime(); }
+      else if (sortKey === 'name') { valA = a.name.toLowerCase(); valB = b.name.toLowerCase(); }
+      else if (sortKey === 'price') { valA = a.price; valB = b.price; }
+      else if (sortKey === 'stock') { valA = a.inStock ? 1 : 0; valB = b.inStock ? 1 : 0; }
+      else { valA = a.id; valB = b.id; }
+
+      if (valA < valB) return sortOrder === 'asc' ? -1 : 1;
+      if (valA > valB) return sortOrder === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }, [products, searchQuery, sortKey, sortOrder]);
+
+  const handleBulkDelete = async () => {
+    if (!selectedProductIds.length) return;
+    if (!window.confirm(`Are you sure you want to delete ${selectedProductIds.length} selected products? This action cannot be undone.`)) return;
+
+    setLoading(true);
+    for (const id of selectedProductIds) {
+      await fetch(`/api/admin/products/${id}`, { method: 'DELETE' });
+    }
+    setSelectedProductIds([]);
+    await fetchProducts();
+  };
+
+  const toggleSelect = (id) => {
+    setSelectedProductIds(prev => prev.includes(id) ? prev.filter(p => p !== id) : [...prev, id]);
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedProductIds.length === filteredProducts.length && filteredProducts.length > 0) {
+      setSelectedProductIds([]);
+    } else {
+      setSelectedProductIds(filteredProducts.map(p => p.id));
+    }
+  };
 
   const updateField = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -270,24 +320,85 @@ export default function AdminDashboardPage() {
         </section>
 
         <section className="bg-surface-card border border-surface-border rounded-2xl p-6">
-          <h2 className="text-xl font-bold text-fg mb-4">Manage Products</h2>
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+            <h2 className="text-xl font-bold text-fg">Manage Products</h2>
+            <div className="flex flex-wrap items-center gap-3">
+              <input
+                type="text"
+                placeholder="Search products..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="input-field !py-2 !w-auto text-sm min-w-[200px]"
+              />
+              <select 
+                value={sortKey} 
+                onChange={(e) => setSortKey(e.target.value)}
+                className="input-field !py-2 !w-auto text-sm"
+              >
+                <option value="createdAt">Date Added</option>
+                <option value="name">Name</option>
+                <option value="price">Price</option>
+                <option value="stock">Stock Status</option>
+              </select>
+              <select 
+                value={sortOrder} 
+                onChange={(e) => setSortOrder(e.target.value)}
+                className="input-field !py-2 !w-auto text-sm"
+              >
+                <option value="desc">Descending</option>
+                <option value="asc">Ascending</option>
+              </select>
+            </div>
+          </div>
+
+          {selectedProductIds.length > 0 && (
+            <div className="mb-4 p-3 bg-surface-muted border border-surface-border rounded-xl flex items-center justify-between transition-all">
+              <span className="text-sm font-medium text-fg">{selectedProductIds.length} products selected</span>
+              <button 
+                onClick={handleBulkDelete}
+                className="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-500 text-sm font-bold rounded-lg transition-colors border border-red-500/20"
+              >
+                Delete Selected
+              </button>
+            </div>
+          )}
+
           {error ? <p className="text-red-500 text-sm mb-3">{error}</p> : null}
           {loading ? (
             <p className="text-fg-muted">Loading products...</p>
           ) : products.length === 0 ? (
             <p className="text-fg-muted text-sm">No products found yet. Create one above.</p>
+          ) : filteredProducts.length === 0 ? (
+            <p className="text-fg-muted text-sm">No products match your search.</p>
           ) : (
             <div className="space-y-3">
-              {products.map((product) => {
+              <div className="flex items-center gap-3 px-4 py-3 border border-surface-border rounded-xl bg-surface-muted/30 mb-2 mt-2">
+                 <input 
+                   type="checkbox" 
+                   checked={selectedProductIds.length === filteredProducts.length && filteredProducts.length > 0}
+                   onChange={toggleSelectAll}
+                   className="w-4 h-4 cursor-pointer accent-cta"
+                 />
+                 <span className="text-sm font-bold text-fg">Select All</span>
+              </div>
+              {filteredProducts.map((product) => {
                 const productImages = [product.image, ...(product.images || [])].filter(Boolean);
                 const uniqueImages = [...new Set(productImages)];
 
                 return (
-                <div key={product.id} className="border border-surface-border rounded-xl p-4 flex flex-col gap-3">
+                <div key={product.id} className={`border rounded-xl p-4 flex flex-col gap-3 transition-colors ${selectedProductIds.includes(product.id) ? 'border-primary-500/50 bg-primary-500/5' : 'border-surface-border'}`}>
                   <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div>
-                      <p className="font-bold text-fg">{product.name}</p>
-                      <p className="text-sm text-fg-muted">{product.type} | {product.material} | ₹{product.price}</p>
+                    <div className="flex items-start gap-4">
+                      <input 
+                        type="checkbox" 
+                        checked={selectedProductIds.includes(product.id)}
+                        onChange={() => toggleSelect(product.id)}
+                        className="mt-1 w-4 h-4 cursor-pointer accent-cta"
+                      />
+                      <div>
+                        <p className="font-bold text-fg">{product.name}</p>
+                        <p className="text-sm text-fg-muted">{product.type} | {product.material} | ₹{product.price}</p>
+                      </div>
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
                       <input
