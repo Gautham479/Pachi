@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { isAdminAuthenticated } from '@/lib/adminAuth';
 import { MATERIAL_TYPES, PRODUCT_TYPES } from '@/lib/catalog';
+import { deleteProductImages } from '@/lib/uploadImage';
 
 async function requireAdmin() {
   const authed = await isAdminAuthenticated();
@@ -56,7 +57,16 @@ export async function DELETE(_, { params }) {
 
   const { id } = await params;
   try {
+    const product = await prisma.product.findUnique({ where: { id } });
+    if (!product) {
+      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+    }
+
+    const imagesToDelete = [product.image, ...(product.images || [])].filter(Boolean);
+    
     await prisma.product.delete({ where: { id } });
+    await deleteProductImages([...new Set(imagesToDelete)]);
+    
     return NextResponse.json({ success: true });
   } catch (error) {
     const details = error instanceof Error ? error.message : 'Unknown delete error';

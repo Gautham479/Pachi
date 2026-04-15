@@ -15,10 +15,12 @@ export const useStore = create((set) => ({
   cart: [],
   isCartOpen: false,
   searchQuery: '',
+  products: [],
 
   openCart: () => set({ isCartOpen: true }),
   closeCart: () => set({ isCartOpen: false }),
   setSearchQuery: (query) => set({ searchQuery: query }),
+  setProducts: (products) => set({ products }),
 
   removeFromCart: (id) => set((state) => ({
     cart: state.cart.filter((item) => item.id !== id)

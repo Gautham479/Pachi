@@ -112,8 +112,10 @@ export default function ProductPage() {
         </button>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Product Image with Zoom Preview */}
-          <div className="flex items-center justify-center relative overflow-visible">
+          {/* Left Column: Image & Thumbnails */}
+          <div className="flex flex-col gap-4 w-full">
+            {/* Product Image with Zoom Preview */}
+            <div className="flex items-center justify-center relative overflow-visible w-full">
             <div 
               onMouseEnter={() => setImageHovered(true)}
               onMouseLeave={() => {
@@ -176,6 +178,25 @@ export default function ProductPage() {
                 </div>
               </div>
             )}
+          </div>
+          
+          {/* Thumbnails */}
+          {getProductImages(product).length > 1 && (
+            <div className="flex flex-wrap gap-2 mt-4 justify-center">
+              {getProductImages(product).map((imageUrl) => (
+                <button
+                  key={imageUrl}
+                  type="button"
+                  onClick={() => setSelectedImage(imageUrl)}
+                  className={`w-16 h-16 rounded-xl border-2 overflow-hidden relative transition-all ${
+                    selectedImage === imageUrl ? 'border-primary-500 shadow-md scale-105' : 'border-surface-border opacity-70 hover:opacity-100 hover:border-primary-500/50'
+                  }`}
+                >
+                  <Image src={imageUrl} alt="Product thumbnail" fill className="object-cover" sizes="64px" />
+                </button>
+              ))}
+            </div>
+          )}
           </div>
 
           {/* Product Details */}
@@ -305,22 +326,7 @@ export default function ProductPage() {
             </div>
           </div>
 
-          {getProductImages(product).length > 1 && (
-            <div className="mt-3 flex flex-wrap gap-2">
-              {getProductImages(product).map((imageUrl) => (
-                <button
-                  key={imageUrl}
-                  type="button"
-                  onClick={() => setSelectedImage(imageUrl)}
-                  className={`w-16 h-16 rounded-lg border overflow-hidden relative ${
-                    selectedImage === imageUrl ? 'border-primary-500' : 'border-surface-border'
-                  }`}
-                >
-                  <Image src={imageUrl} alt="Product thumbnail" fill className="object-cover" sizes="64px" />
-                </button>
-              ))}
-            </div>
-          )}
+          {/* Original Thumbnails Moved */}
         </div>
 
         {/* Related Products Section */}

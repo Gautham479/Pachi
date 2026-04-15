@@ -27,6 +27,7 @@ export default function AdminDashboardPage() {
   const [imageFiles, setImageFiles] = useState([]);
   const [additionalImagesByProduct, setAdditionalImagesByProduct] = useState({});
   const [uploadingProductId, setUploadingProductId] = useState('');
+  const [deletingImage, setDeletingImage] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -161,6 +162,26 @@ export default function AdminDashboardPage() {
     }
   };
 
+  const deleteProductImage = async (productId, imageUrl) => {
+    if (!window.confirm('Delete this image permanently?')) return;
+    setDeletingImage(imageUrl);
+    setError('');
+
+    const response = await fetch(`/api/admin/products/${productId}/images`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ imageUrl }),
+    });
+
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}));
+      setError(data?.error || 'Failed to delete image.');
+    } else {
+      await fetchProducts();
+    }
+    setDeletingImage('');
+  };
+
   const deleteProduct = async (id) => {
     const shouldDelete = window.confirm('Delete this product?');
     if (!shouldDelete) return;
@@ -257,45 +278,73 @@ export default function AdminDashboardPage() {
             <p className="text-fg-muted text-sm">No products found yet. Create one above.</p>
           ) : (
             <div className="space-y-3">
-              {products.map((product) => (
-                <div key={product.id} className="border border-surface-border rounded-xl p-4 flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <p className="font-bold text-fg">{product.name}</p>
-                    <p className="text-sm text-fg-muted">{product.type} | {product.material} | ₹{product.price}</p>
-                    <p className="text-xs text-fg-subtle mt-1">Images: {(product.images || []).length}</p>
+              {products.map((product) => {
+                const productImages = [product.image, ...(product.images || [])].filter(Boolean);
+                const uniqueImages = [...new Set(productImages)];
+
+                return (
+                <div key={product.id} className="border border-surface-border rounded-xl p-4 flex flex-col gap-3">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                      <p className="font-bold text-fg">{product.name}</p>
+                      <p className="text-sm text-fg-muted">{product.type} | {product.material} | ₹{product.price}</p>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <input
+                        type="file"
+                        multiple
+                        accept="image/*"
+                        onChange={(e) =>
+                          setAdditionalImagesByProduct((prev) => ({
+                            ...prev,
+                            [product.id]: Array.from(e.target.files || []),
+                          }))
+                        }
+                        className="input-field !py-1.5 !text-xs w-[220px]"
+                      />
+                      <button
+                        onClick={() => addImagesToProduct(product.id)}
+                        disabled={uploadingProductId === product.id || !(additionalImagesByProduct[product.id] || []).length}
+                        className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-primary-500/15 text-fg disabled:opacity-50"
+                      >
+                        {uploadingProductId === product.id ? 'Uploading...' : 'Add Images'}
+                      </button>
+                      <button
+                        onClick={() => toggleStock(product)}
+                        className={`px-3 py-1.5 rounded-lg text-sm font-semibold ${product.inStock ? 'bg-green-500/15 text-green-600' : 'bg-amber-500/15 text-amber-600'}`}
+                      >
+                        {product.inStock ? 'Mark Out of Stock' : 'Mark In Stock'}
+                      </button>
+                      <button onClick={() => deleteProduct(product.id)} className="px-3 py-1.5 rounded-lg text-sm font-semibold bg-red-500/15 text-red-600">
+                        Remove Product
+                      </button>
+                    </div>
                   </div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <input
-                      type="file"
-                      multiple
-                      accept="image/*"
-                      onChange={(e) =>
-                        setAdditionalImagesByProduct((prev) => ({
-                          ...prev,
-                          [product.id]: Array.from(e.target.files || []),
-                        }))
-                      }
-                      className="input-field !py-1.5 !text-xs w-[220px]"
-                    />
-                    <button
-                      onClick={() => addImagesToProduct(product.id)}
-                      disabled={uploadingProductId === product.id || !(additionalImagesByProduct[product.id] || []).length}
-                      className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-primary-500/15 text-fg disabled:opacity-50"
-                    >
-                      {uploadingProductId === product.id ? 'Uploading...' : 'Add Images'}
-                    </button>
-                    <button
-                      onClick={() => toggleStock(product)}
-                      className={`px-3 py-1.5 rounded-lg text-sm font-semibold ${product.inStock ? 'bg-green-500/15 text-green-600' : 'bg-amber-500/15 text-amber-600'}`}
-                    >
-                      {product.inStock ? 'Mark Out of Stock' : 'Mark In Stock'}
-                    </button>
-                    <button onClick={() => deleteProduct(product.id)} className="px-3 py-1.5 rounded-lg text-sm font-semibold bg-red-500/15 text-red-600">
-                      Remove
-                    </button>
-                  </div>
+
+                  {uniqueImages.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-2 pt-2 border-t border-surface-border/50">
+                      {uniqueImages.map(url => (
+                        <div key={url} className="relative w-16 h-16 border border-surface-border rounded-lg bg-surface-muted overflow-hidden group">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={url} alt="" className="w-full h-full object-cover" />
+                          <button 
+                            onClick={() => deleteProductImage(product.id, url)} 
+                            disabled={deletingImage === url} 
+                            className="absolute inset-0 bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                            title="Delete image"
+                          >
+                            {deletingImage === url ? '...' : (
+                              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-red-400">
+                                <path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                              </svg>
+                            )}
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              ))}
+              )})}
             </div>
           )}
         </section>
