@@ -1,5 +1,6 @@
 import React from 'react';
 import { Check, X, Zap } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export default function Features() {
   const materials = [
@@ -69,19 +70,32 @@ export default function Features() {
   };
 
   return (
-    <section id="features" className="w-full py-24 bg-surface-muted/50">
+    <section id="features" className="w-full py-24 bg-surface-muted/50 overflow-hidden">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.5 }}
+          className="text-center mb-16"
+        >
           <h2 className="text-3xl md:text-5xl font-extrabold text-fg mb-4">Materials – Choose What Fits Your Use</h2>
           <p className="text-lg text-fg-muted max-w-2xl mx-auto">
             Select the right material for your project based on your specific needs
           </p>
-        </div>
+        </motion.div>
 
         {/* Materials Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
           {materials.map((material, i) => (
-            <div key={i} className="bg-surface-card border border-surface-border p-8 rounded-2xl shadow-sm hover:border-primary-500/30 transition-colors">
+            <motion.div 
+              key={i} 
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.5, delay: i * 0.1 }}
+              className="bg-surface-card border border-surface-border p-8 rounded-2xl shadow-sm hover:border-primary-500/30 transition-colors"
+            >
               <h3 className="text-xl font-bold text-fg mb-6 flex items-center gap-2">
                 <span className="text-2xl">{material.emoji}</span>
                 {material.name}
@@ -98,22 +112,35 @@ export default function Features() {
                   </li>
                 ))}
               </ul>
-            </div>
+            </motion.div>
           ))}
         </div>
 
         {/* Quick Guide */}
-        <div className="bg-surface-card border border-surface-border p-8 rounded-2xl shadow-sm">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="bg-surface-card border border-surface-border p-8 rounded-2xl shadow-sm"
+        >
           <h3 className="text-2xl font-bold text-fg mb-6">💡 Quick Guide</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             {quickGuide.map((item, i) => (
-              <div key={i} className="bg-surface-muted p-4 rounded-lg border border-surface-border">
+              <motion.div 
+                key={i} 
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.3, delay: 0.3 + (i * 0.05) }}
+                className="bg-surface-muted p-4 rounded-lg border border-surface-border hover:border-primary-500/30 transition-colors"
+              >
                 <p className="text-sm font-semibold text-fg mb-2">{item.question}</p>
                 <p className="text-fg-muted">{item.answer}</p>
-              </div>
+              </motion.div>
             ))}
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

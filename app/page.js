@@ -11,6 +11,7 @@ import FAQ from '@/components/FAQ';
 import Footer from '@/components/Footer';
 import CartDrawer from '@/components/CartDrawer';
 import { useStore } from '@/store/useStore';
+import { motion } from 'framer-motion';
 
 function ScrollToSection() {
   const searchParams = useSearchParams();
@@ -67,9 +68,14 @@ export default function Home() {
       
       {/* Top headline in empty space */}
       <section className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 text-center">
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-fg tracking-tight leading-tight">
+        <motion.h1 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
+          className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-fg tracking-tight leading-tight"
+        >
           Where Your Ideas <span className="text-primary-500">Become Reality</span>
-        </h1>
+        </motion.h1>
       </section>
 
       {/* Hero Section */}

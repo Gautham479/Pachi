@@ -1,7 +1,6 @@
-"use client";
-
 import React, { useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export default function FAQ() {
   const faqs = [
@@ -26,17 +25,27 @@ export default function FAQ() {
   const [openIndex, setOpenIndex] = useState(0);
 
   return (
-    <section id="faq" className="w-full py-24 bg-surface-muted/40">
+    <section id="faq" className="w-full py-24 bg-surface-muted/40 overflow-hidden">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.5 }}
+          className="text-center mb-16"
+        >
           <h2 className="text-3xl md:text-5xl font-extrabold text-fg mb-4">Frequently Asked Questions</h2>
           <p className="text-lg text-fg-muted">Everything you need to know about our service.</p>
-        </div>
+        </motion.div>
 
         <div className="space-y-4">
           {faqs.map((faq, i) => (
-            <div 
+            <motion.div 
               key={i} 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 0.4, delay: i * 0.1 }}
               className={`border border-surface-border rounded-xl bg-surface-card overflow-hidden transition-all duration-300 ${openIndex === i ? 'shadow-lg border-primary-500/30' : ''}`}
             >
               <button 
@@ -58,7 +67,7 @@ export default function FAQ() {
               >
                 <p className="text-fg-muted leading-relaxed">{faq.a}</p>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
