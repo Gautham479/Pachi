@@ -27,7 +27,7 @@ export default function HowItWorks() {
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true, margin: "-50px" }}
+          viewport={{ once: false, amount: 0.2 }}
           transition={{ duration: 0.5 }}
           className="text-center mb-16"
         >
@@ -43,7 +43,7 @@ export default function HowItWorks() {
             <motion.div 
               initial={{ x: "-100%" }}
               whileInView={{ x: "100%" }}
-              viewport={{ once: true, margin: "-50px" }}
+              viewport={{ once: false, amount: 0.2 }}
               transition={{ duration: 1.5, delay: 0.5, ease: "easeInOut" }}
               className="absolute inset-0 bg-primary-500/50"
             />
@@ -54,7 +54,7 @@ export default function HowItWorks() {
               key={i} 
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
+              viewport={{ once: false, amount: 0.2 }}
               transition={{ duration: 0.6, delay: i * 0.2 }}
               className="flex flex-col items-center text-center relative z-10"
             >

@@ -268,8 +268,9 @@ export default function ProductsGrid() {
           <motion.div 
             key={product.id}
             initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: Math.min(idx * 0.05, 0.5), duration: 0.4 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false, amount: 0.1 }}
+            transition={{ duration: 0.4 }}
           >
             <ProductCard 
               product={product} 

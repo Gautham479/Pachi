@@ -75,7 +75,7 @@ export default function Features() {
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
+          viewport={{ once: false, amount: 0.2 }}
           transition={{ duration: 0.5 }}
           className="text-center mb-16"
         >
@@ -92,7 +92,7 @@ export default function Features() {
               key={i} 
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
+              viewport={{ once: false, amount: 0.2 }}
               transition={{ duration: 0.5, delay: i * 0.1 }}
               className="bg-surface-card border border-surface-border p-8 rounded-2xl shadow-sm hover:border-primary-500/30 transition-colors"
             >
@@ -120,7 +120,7 @@ export default function Features() {
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true, margin: "-50px" }}
+          viewport={{ once: false, amount: 0.2 }}
           transition={{ duration: 0.5, delay: 0.2 }}
           className="bg-surface-card border border-surface-border p-8 rounded-2xl shadow-sm"
         >
@@ -131,7 +131,7 @@ export default function Features() {
                 key={i} 
                 initial={{ opacity: 0, y: 10 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
+                viewport={{ once: false, amount: 0.2 }}
                 transition={{ duration: 0.3, delay: 0.3 + (i * 0.05) }}
                 className="bg-surface-muted p-4 rounded-lg border border-surface-border hover:border-primary-500/30 transition-colors"
               >

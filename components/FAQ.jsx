@@ -30,7 +30,7 @@ export default function FAQ() {
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-50px" }}
+          viewport={{ once: false, amount: 0.2 }}
           transition={{ duration: 0.5 }}
           className="text-center mb-16"
         >
@@ -44,7 +44,7 @@ export default function FAQ() {
               key={i} 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
+              viewport={{ once: false, amount: 0.2 }}
               transition={{ duration: 0.4, delay: i * 0.1 }}
               className={`border border-surface-border rounded-xl bg-surface-card overflow-hidden transition-all duration-300 ${openIndex === i ? 'shadow-lg border-primary-500/30' : ''}`}
             >
