@@ -79,7 +79,13 @@ export default function CartDrawer() {
               <span className="text-fg-muted font-medium text-lg">Total Cost</span>
               <span className="text-3xl text-fg font-black">₹{totalCost}</span>
             </div>
-            <button className="w-full bg-cta hover:opacity-90 text-cta-contrast font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all transform active:scale-95 shadow-lg shadow-black/10 dark:shadow-black/40">
+            <button 
+              onClick={() => {
+                closeCart();
+                window.location.href = '/checkout';
+              }}
+              className="w-full bg-cta hover:opacity-90 text-cta-contrast font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all transform active:scale-95 shadow-lg shadow-black/10 dark:shadow-black/40"
+            >
               <Rocket className="w-5 h-5" /> 
               Proceed to secure checkout
             </button>

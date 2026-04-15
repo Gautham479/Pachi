@@ -21,7 +21,9 @@ const EMPTY_FORM = {
 };
 
 export default function AdminDashboardPage() {
+  const [activeTab, setActiveTab] = useState('products');
   const [products, setProducts] = useState([]);
+  const [orders, setOrders] = useState([]);
   const [form, setForm] = useState(EMPTY_FORM);
   const [imageFile, setImageFile] = useState(null);
   const [imageFiles, setImageFiles] = useState([]);
@@ -62,9 +64,17 @@ export default function AdminDashboardPage() {
     setLoading(false);
   };
 
+  const fetchOrders = async () => {
+    const response = await fetch('/api/admin/orders');
+    if (response.ok) {
+      const data = await response.json();
+      setOrders(data);
+    }
+  };
+
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchProducts();
+    fetchOrders();
   }, []);
 
   const inStockCount = useMemo(() => products.filter((product) => product.inStock).length, [products]);
@@ -254,22 +264,40 @@ export default function AdminDashboardPage() {
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-extrabold text-fg">Admin Product Manager</h1>
+            <h1 className="text-3xl font-extrabold text-fg">Admin Dashboard</h1>
             <p className="text-fg-muted mt-1 text-sm">
-              Total: {products.length} products | In stock: {inStockCount}
+              Products: {products.length} | Orders: {orders.length}
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Link href="/" className="px-4 py-2 rounded-lg bg-surface-card border border-surface-border text-fg">
-              Back to Homepage
+            <Link href="/" className="px-4 py-2 rounded-lg bg-surface-card border border-surface-border text-fg text-sm font-medium hover:bg-surface-muted transition-colors">
+              Back to Store
             </Link>
-            <button onClick={logout} className="px-4 py-2 rounded-lg bg-surface-card border border-surface-border text-fg">
+            <button onClick={logout} className="px-4 py-2 rounded-lg bg-surface-card border border-surface-border text-fg text-sm font-medium hover:bg-red-500/10 hover:text-red-500 hover:border-red-500/30 transition-colors">
               Logout
             </button>
           </div>
         </div>
 
-        <section className="bg-surface-card border border-surface-border rounded-2xl p-6">
+        {/* Tabs */}
+        <div className="flex gap-4 border-b border-surface-border pb-px">
+          <button 
+            onClick={() => setActiveTab('products')} 
+            className={`pb-3 px-2 text-sm font-bold border-b-2 transition-colors ${activeTab === 'products' ? 'border-primary-500 text-fg' : 'border-transparent text-fg-muted hover:text-fg'}`}
+          >
+            Products Manager
+          </button>
+          <button 
+            onClick={() => setActiveTab('orders')} 
+            className={`pb-3 px-2 text-sm font-bold border-b-2 transition-colors ${activeTab === 'orders' ? 'border-primary-500 text-fg' : 'border-transparent text-fg-muted hover:text-fg'}`}
+          >
+            Orders Manager
+          </button>
+        </div>
+
+        {activeTab === 'products' ? (
+        <>
+          <section className="bg-surface-card border border-surface-border rounded-2xl p-6">
           <h2 className="text-xl font-bold text-fg mb-4">Add New Product</h2>
           <form onSubmit={handleCreateProduct} className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <input className="input-field" placeholder="Name" value={form.name} onChange={(e) => updateField('name', e.target.value)} required />
@@ -459,6 +487,80 @@ export default function AdminDashboardPage() {
             </div>
           )}
         </section>
+        </>
+        ) : (
+        <section className="bg-surface-card border border-surface-border rounded-2xl p-6">
+          <h2 className="text-xl font-bold text-fg mb-6">Recent Orders</h2>
+          {orders.length === 0 ? (
+            <p className="text-fg-muted text-sm border border-surface-border border-dashed p-8 text-center rounded-xl">No orders received yet.</p>
+          ) : (
+            <div className="space-y-4">
+              {orders.map(order => (
+                <div key={order.id} className="border border-surface-border rounded-xl p-5 bg-surface-bg flex flex-col md:flex-row gap-6">
+                  <div className="flex-1 space-y-4">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className="font-bold text-lg text-fg">{order.orderId}</p>
+                        <p className="text-xs text-fg-muted">{new Date(order.createdAt).toLocaleString()}</p>
+                      </div>
+                      <span className={`px-2.5 py-1 rounded-md text-xs font-bold ${
+                        order.status === 'PAID' ? 'bg-green-500/15 text-green-500' :
+                        order.status === 'PENDING' ? 'bg-amber-500/15 text-amber-500' :
+                        'bg-red-500/15 text-red-500'
+                      }`}>
+                        {order.status}
+                      </span>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-surface-muted/30 p-3 rounded-lg border border-surface-border/50 text-sm">
+                      <div>
+                        <p className="text-fg-muted text-xs uppercase mb-1">Customer</p>
+                        <p className="font-semibold text-fg">{order.customerName}</p>
+                        <p className="text-fg-muted">{order.email}</p>
+                        <p className="text-fg-muted">{order.phone}</p>
+                      </div>
+                      <div>
+                        <p className="text-fg-muted text-xs uppercase mb-1">Shipping</p>
+                        <p className="text-fg-muted">{order.address}</p>
+                        <p className="text-fg-muted">{order.city}, {order.state} {order.pincode}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="md:w-80 flex flex-col justify-between border-t md:border-t-0 md:border-l border-surface-border pt-4 md:pt-0 md:pl-6">
+                    <div>
+                      <p className="text-fg-muted text-xs uppercase mb-2">Items Included</p>
+                      <ul className="space-y-2 text-sm max-h-[140px] overflow-y-auto">
+                        {order.items?.map(item => (
+                          <li key={item.id} className="flex justify-between items-start">
+                            <span className="text-fg font-medium">{item.fileName}</span>
+                            <span className="text-fg-muted whitespace-nowrap ml-2">₹{item.price}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    
+                    <div className="mt-4 pt-3 border-t border-surface-border space-y-1">
+                      <div className="flex justify-between text-xs text-fg-muted">
+                        <span>Items Total</span>
+                        <span>₹{order.totalAmount - order.deliveryFee}</span>
+                      </div>
+                      <div className="flex justify-between text-xs text-fg-muted">
+                        <span>Delivery</span>
+                        <span>₹{order.deliveryFee}</span>
+                      </div>
+                      <div className="flex justify-between text-base font-bold text-primary-500 pt-1">
+                        <span>Total Paid</span>
+                        <span>₹{order.totalAmount}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+        )}
       </div>
     </main>
   );
