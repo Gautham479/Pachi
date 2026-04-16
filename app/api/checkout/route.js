@@ -19,7 +19,7 @@ export async function POST(req) {
 
     // Calculate totals securely
     const subtotal = items.reduce((acc, item) => acc + item.price, 0);
-    const deliveryFee = subtotal >= 400 ? 0 : 40;
+    const deliveryFee = 0; // Delivery charges removed for now
     const totalAmount = subtotal + deliveryFee;
 
     // Generate readable order ID

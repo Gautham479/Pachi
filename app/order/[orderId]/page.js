@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, use } from 'react';
 import { ShieldCheck, Truck, Package, CheckCircle, Clock, ChevronRight, Download, Receipt } from 'lucide-react';
 import Link from 'next/link';
 
-export default function OrderConfirmationPage({ params }) {
+export default function OrderConfirmationPage(props) {
+  const params = use(props.params);
   const { orderId } = params;
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -63,15 +64,37 @@ export default function OrderConfirmationPage({ params }) {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         
         {/* Success Header */}
-        <div className="bg-surface-card border-t-4 border-t-green-500 border border-surface-border p-8 rounded-b-3xl rounded-t-xl shadow-sm text-center md:text-left md:flex items-center justify-between">
+        <div className={`bg-surface-card border-t-4 ${order.status === 'PAID' ? 'border-t-green-500' : 'border-t-red-500'} border border-surface-border p-8 rounded-b-3xl rounded-t-xl shadow-sm text-center md:text-left md:flex items-center justify-between`}>
           <div className="flex flex-col md:flex-row items-center gap-6">
-            <div className="w-20 h-20 bg-green-500/10 rounded-full flex items-center justify-center flex-shrink-0">
-              <CheckCircle className="w-10 h-10 text-green-500" />
+            <div className={`w-20 h-20 ${order.status === 'PAID' ? 'bg-green-500/10' : 'bg-red-500/10'} rounded-full flex items-center justify-center flex-shrink-0`}>
+              {order.status === 'PAID' ? (
+                 <CheckCircle className="w-10 h-10 text-green-500" />
+              ) : (
+                 <ShieldCheck className="w-10 h-10 text-red-500" />
+              )}
             </div>
             <div>
-              <h1 className="text-3xl font-extrabold tracking-tight mb-2 text-fg">Order Confirmed!</h1>
-              <p className="text-fg-muted text-lg">Thank you, {order.customerName}. Your 3D prints are heading to the queue.</p>
-              <p className="text-sm font-medium text-fg-muted mt-2 inline-block bg-surface-muted px-3 py-1 rounded-full">
+              <h1 className="text-3xl font-extrabold tracking-tight mb-2 text-fg">
+                {order.status === 'PAID' ? 'Order Confirmed! 🎉' : 'Payment Incomplete or Cancelled'}
+              </h1>
+              
+              {order.status === 'PAID' ? (
+                <>
+                  <p className="text-fg-muted text-lg">
+                    Thank you so much, {order.customerName}! We are genuinely thrilled to receive your order. Your 3D models are already heading to our print queue and will be crafted with care.
+                  </p>
+                  <div className="mt-4 bg-primary-500/10 border border-primary-500/20 text-primary-600 px-4 py-3 rounded-xl text-sm text-left">
+                    <span className="font-bold">NOTE: </span>
+                    All details of your order have been safely sent to your mail. For any queries, please don't hesitate to contact us at <a href="mailto:ngthamtalur@gmail.com" className="font-bold underline">ngthamtalur@gmail.com</a> or call <span className="font-bold">9900458138</span>.
+                  </div>
+                </>
+              ) : (
+                <p className="text-fg-muted text-lg">
+                  We noticed your payment was cancelled or failed, {order.customerName}. Don't worry, your files are safe! You can try placing the order again whenever you're ready.
+                </p>
+              )}
+              
+              <p className="text-sm font-medium text-fg-muted mt-5 inline-block bg-surface-muted px-3 py-1 rounded-full">
                 Order <span className="text-primary-500 font-bold uppercase">{order.orderId}</span>
               </p>
             </div>

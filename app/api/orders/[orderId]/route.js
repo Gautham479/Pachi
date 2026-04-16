@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 
 export async function GET(req, { params }) {
   try {
-    const { orderId } = params;
+    const { orderId } = await params;
 
     if (!orderId) {
       return NextResponse.json({ error: 'Order ID is required' }, { status: 400 });

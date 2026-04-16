@@ -13,6 +13,7 @@ export default function CheckoutPage() {
   
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [isSuccess, setIsSuccess] = useState(false);
   
   const [formData, setFormData] = useState({
     customerName: '', 
@@ -26,18 +27,16 @@ export default function CheckoutPage() {
     notes: ''
   });
 
-  const MIN_ORDER_VALUE = 400;
   const subtotal = cart.reduce((acc, item) => acc + item.price, 0);
-  const deliveryFee = subtotal >= MIN_ORDER_VALUE ? 0 : 0; // Screenshot implies free shipping but min order required
+  const deliveryFee = 0; // Delivery charges removed for now
   const totalAmount = subtotal + deliveryFee;
-  const canCheckout = subtotal >= MIN_ORDER_VALUE;
-  const shortFall = MIN_ORDER_VALUE - subtotal;
+  const canCheckout = true;
 
   useEffect(() => {
-    if (cart.length === 0) {
+    if (cart.length === 0 && !isSuccess) {
       router.push('/');
     }
-  }, [cart, router]);
+  }, [cart, router, isSuccess]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -95,6 +94,7 @@ export default function CheckoutPage() {
             internal_order_id: data.orderId
           })
         });
+        setIsSuccess(true);
         clearCart();
         router.push(`/order/${data.orderId}`);
         return;
@@ -119,6 +119,7 @@ export default function CheckoutPage() {
           });
           const verifyData = await verifyRes.json();
           if (verifyData.success) {
+            setIsSuccess(true);
             clearCart();
             router.push(`/order/${data.orderId}`); 
           } else {
@@ -296,7 +297,11 @@ export default function CheckoutPage() {
                 </div>
                 <div className="flex justify-between items-center text-gray-400">
                   <span>Shipping</span>
-                  <span className="text-green-500">Free</span>
+                  {deliveryFee === 0 ? (
+                    <span className="text-green-500">Free</span>
+                  ) : (
+                    <span className="text-gray-200">₹{deliveryFee}</span>
+                  )}
                 </div>
               </div>
 
@@ -308,12 +313,7 @@ export default function CheckoutPage() {
                 <span className="text-4xl font-black text-[#FF6347]">₹{totalAmount}</span>
               </div>
 
-              {/* Minimum Order Enforcement */}
-              {!canCheckout && (
-                <div className="bg-[#2A1800] border border-orange-600/30 text-orange-400 text-xs px-4 py-3 rounded-xl">
-                  Please add items worth <span className="font-bold">₹{shortFall}</span> more to meet the minimum order value of <span className="font-bold">₹{MIN_ORDER_VALUE}</span>.
-                </div>
-              )}
+
 
               <button 
                 type="submit" 
