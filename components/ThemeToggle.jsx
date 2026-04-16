@@ -14,7 +14,7 @@ export default function ThemeToggle() {
   const toggle = () => {
     const next = !document.documentElement.classList.contains("dark");
     document.documentElement.classList.toggle("dark", next);
-    localStorage.setItem("pachi-theme", next ? "dark" : "light");
+    localStorage.setItem("mahashri-theme", next ? "dark" : "light");
     setDark(next);
   };
 

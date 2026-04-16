@@ -28,7 +28,7 @@ export default function Footer() {
                 <span className="text-xl relative z-10">🖨️</span>
               </div>
               <span className="font-black text-xl tracking-tight text-fg">
-                Pachi <span className="gradient-text">3D</span>
+                Mahashri <span className="gradient-text">Labs</span>
               </span>
             </motion.div>
 
@@ -87,7 +87,7 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="border-t border-surface-border/40 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-fg-subtle text-sm">
-            © {new Date().getFullYear()} Pachi 3D. All rights reserved.
+            © {new Date().getFullYear()} Mahashri Labs. All rights reserved.
           </p>
           <div className="flex items-center gap-3">
             <span className="text-fg-subtle text-sm">Made with precision in India</span>

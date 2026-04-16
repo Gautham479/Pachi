@@ -17,7 +17,7 @@ export const metadata = {
   description: "Get instant pricing and upload your 3D models.",
 };
 
-const themeInit = `(function(){try{var k='pachi-theme',s=localStorage.getItem(k),d='dark',l='light';if(s===d||(s!==l&&window.matchMedia('(prefers-color-scheme:dark)').matches))document.documentElement.classList.add(d);else document.documentElement.classList.remove(d)}catch(e){}})();`;
+const themeInit = `(function(){try{var k='mahashri-theme',s=localStorage.getItem(k),d='dark',l='light';if(s===d||(s!==l&&window.matchMedia('(prefers-color-scheme:dark)').matches))document.documentElement.classList.add(d);else document.documentElement.classList.remove(d)}catch(e){}})();`;
 
 export default function RootLayout({ children }) {
   return (

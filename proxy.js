@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-const ADMIN_COOKIE_NAME = 'pachi_admin_session';
+const ADMIN_COOKIE_NAME = 'mahashri_admin_session';
 const SESSION_TOKEN = process.env.ADMIN_SESSION_TOKEN || 'change-me-admin-session-token';
 
 export function proxy(request) {

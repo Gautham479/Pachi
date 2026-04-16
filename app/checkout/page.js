@@ -118,7 +118,7 @@ export default function CheckoutPage() {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || '',
         amount: data.amount * 100,
         currency: data.currency,
-        name: "Pachi 3D",
+        name: "Mahashri Labs",
         description: `Order ${data.orderId}`,
         order_id: data.razorpayOrderId,
         handler: async function (response) {

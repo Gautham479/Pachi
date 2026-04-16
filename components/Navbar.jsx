@@ -107,7 +107,7 @@ export default function Navbar() {
                 <span className="text-xl relative z-10">🖨️</span>
               </div>
               <span className="font-black text-xl tracking-tight text-fg">
-                Pachi <span className="gradient-text">3D</span>
+                Mahashri <span className="gradient-text">Labs</span>
               </span>
             </motion.div>
 
