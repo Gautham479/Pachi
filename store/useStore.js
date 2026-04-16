@@ -26,6 +26,8 @@ export const useStore = create((set) => ({
   setScrollPosition: (pos) => set({ scrollPosition: pos }),
   setActiveTab: (tab) => set({ activeTab: tab }),
 
+  clearCart: () => set({ cart: [] }),
+
   removeFromCart: (id) => set((state) => ({
     cart: state.cart.filter((item) => item.id !== id)
   })),

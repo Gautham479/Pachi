@@ -7,7 +7,11 @@ const prisma = new PrismaClient();
 export async function POST(req) {
   try {
     const body = await req.json();
-    const { items, customerName, email, phone, address, city, state, pincode } = body;
+    const { items, customerName, email, phone, address1, address2, notes, city, state, pincode } = body;
+
+    let compiledAddress = address1 || '';
+    if (address2) compiledAddress += `, ${address2}`;
+    if (notes) compiledAddress += ` | Notes: ${notes}`;
 
     if (!items || items.length === 0) {
       return NextResponse.json({ error: 'Cart is empty' }, { status: 400 });
@@ -52,7 +56,7 @@ export async function POST(req) {
         customerName,
         email,
         phone,
-        address,
+        address: compiledAddress,
         city,
         state,
         pincode,

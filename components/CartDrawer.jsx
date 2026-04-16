@@ -3,9 +3,11 @@
 import React from 'react';
 import { X, Trash2, ShoppingCart, Rocket } from 'lucide-react';
 import { useStore } from '../store/useStore';
+import { useRouter } from 'next/navigation';
 
 export default function CartDrawer() {
   const { isCartOpen, closeCart, cart, removeFromCart } = useStore();
+  const router = useRouter();
 
   if (!isCartOpen) return null;
 
@@ -82,7 +84,7 @@ export default function CartDrawer() {
             <button 
               onClick={() => {
                 closeCart();
-                window.location.href = '/checkout';
+                router.push('/checkout');
               }}
               className="w-full bg-cta hover:opacity-90 text-cta-contrast font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all transform active:scale-95 shadow-lg shadow-black/10 dark:shadow-black/40"
             >
