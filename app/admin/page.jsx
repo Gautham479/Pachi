@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { MATERIAL_TYPES, PRODUCT_TYPES } from '@/lib/catalog';
 import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Package, ShoppingBag, LogOut, ArrowLeft, Plus, Search, Trash2, CheckCircle, XCircle, Upload, BarChart3, Zap } from 'lucide-react';
 
 const EMPTY_FORM = {
   name: '',
@@ -259,308 +261,418 @@ export default function AdminDashboardPage() {
     window.location.href = '/admin/login';
   };
 
+
+  const inputClass = "w-full rounded-xl border border-surface-border bg-surface-muted/60 px-3 py-2.5 text-fg text-sm focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500/30 transition-all backdrop-blur-sm";
+
+  const statCards = [
+    { label: 'Total Products', value: products.length, icon: <Package className="w-5 h-5" />, color: 'from-primary-500/20 to-accent-500/20', border: 'border-primary-500/30' },
+    { label: 'In Stock', value: inStockCount, icon: <CheckCircle className="w-5 h-5" />, color: 'from-green-500/20 to-emerald-500/20', border: 'border-green-500/30' },
+    { label: 'Total Orders', value: orders.length, icon: <ShoppingBag className="w-5 h-5" />, color: 'from-cyan-500/20 to-teal-500/20', border: 'border-cyan-500/30' },
+    { label: 'Revenue', value: `₹${orders.filter(o => o.status === 'PAID').reduce((s, o) => s + o.totalAmount, 0)}`, icon: <BarChart3 className="w-5 h-5" />, color: 'from-purple-500/20 to-pink-500/20', border: 'border-purple-500/30' },
+  ];
+
   return (
-    <main className="min-h-screen bg-surface-bg">
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+    <main className="min-h-screen bg-surface-bg relative overflow-hidden">
+      <div className="absolute inset-0 cyber-grid opacity-20 pointer-events-none" />
+      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-primary-500 via-accent-500 to-primary-500" />
+
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8 relative">
+
+        {/* Header */}
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-extrabold text-fg">Admin Dashboard</h1>
-            <p className="text-fg-muted mt-1 text-sm">
+            <h1 className="text-3xl font-black text-fg flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500/20 to-accent-500/20 border border-primary-500/30 flex items-center justify-center">
+                <Zap className="w-5 h-5 text-primary-500" />
+              </div>
+              Admin Dashboard
+            </h1>
+            <p className="text-fg-muted mt-1 text-sm ml-13">
               Products: {products.length} | Orders: {orders.length}
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Link href="/" className="px-4 py-2 rounded-lg bg-surface-card border border-surface-border text-fg text-sm font-medium hover:bg-surface-muted transition-colors">
+            <Link href="/" className="flex items-center gap-2 px-4 py-2 rounded-xl bg-surface-card/60 backdrop-blur-sm border border-surface-border text-fg text-sm font-bold hover:border-primary-500/40 hover:text-primary-500 transition-all">
+              <ArrowLeft className="w-4 h-4" />
               Back to Store
             </Link>
-            <button onClick={logout} className="px-4 py-2 rounded-lg bg-surface-card border border-surface-border text-fg text-sm font-medium hover:bg-red-500/10 hover:text-red-500 hover:border-red-500/30 transition-colors">
+            <button onClick={logout} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-surface-card/60 backdrop-blur-sm border border-surface-border text-fg text-sm font-bold hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/30 transition-all">
+              <LogOut className="w-4 h-4" />
               Logout
             </button>
           </div>
         </div>
 
-        {/* Tabs */}
-        <div className="flex gap-4 border-b border-surface-border pb-px">
-          <button 
-            onClick={() => setActiveTab('products')} 
-            className={`pb-3 px-2 text-sm font-bold border-b-2 transition-colors ${activeTab === 'products' ? 'border-primary-500 text-fg' : 'border-transparent text-fg-muted hover:text-fg'}`}
-          >
-            Products Manager
-          </button>
-          <button 
-            onClick={() => setActiveTab('orders')} 
-            className={`pb-3 px-2 text-sm font-bold border-b-2 transition-colors ${activeTab === 'orders' ? 'border-primary-500 text-fg' : 'border-transparent text-fg-muted hover:text-fg'}`}
-          >
-            Orders Manager
-          </button>
+        {/* Stat cards */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {statCards.map((stat, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.08 }}
+              className={`rounded-2xl border ${stat.border} bg-surface-card/60 backdrop-blur-sm p-5 relative overflow-hidden`}
+            >
+              <div className={`absolute inset-0 bg-gradient-to-br ${stat.color} pointer-events-none`} />
+              <div className="relative flex items-start justify-between">
+                <div>
+                  <p className="text-fg-subtle text-xs font-bold uppercase tracking-wider mb-1">{stat.label}</p>
+                  <p className="text-2xl font-black text-fg">{stat.value}</p>
+                </div>
+                <div className="text-primary-500 opacity-60">{stat.icon}</div>
+              </div>
+            </motion.div>
+          ))}
         </div>
 
-        {activeTab === 'products' ? (
-        <>
-          <section className="bg-surface-card border border-surface-border rounded-2xl p-6">
-          <h2 className="text-xl font-bold text-fg mb-4">Add New Product</h2>
-          <form onSubmit={handleCreateProduct} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <input className="input-field" placeholder="Name" value={form.name} onChange={(e) => updateField('name', e.target.value)} required />
-            <input className="input-field" placeholder="Slug (optional)" value={form.slug} onChange={(e) => updateField('slug', e.target.value)} />
-            <input className="input-field md:col-span-2" placeholder="Short description" value={form.description} onChange={(e) => updateField('description', e.target.value)} required />
-            <textarea className="input-field md:col-span-2 min-h-24" placeholder="Full description" value={form.fullDescription} onChange={(e) => updateField('fullDescription', e.target.value)} required />
-            <select className="input-field" value={form.type} onChange={(e) => updateField('type', e.target.value)}>
-              {PRODUCT_TYPES.map((type) => <option key={type} value={type}>{type}</option>)}
-            </select>
-            <select className="input-field" value={form.material} onChange={(e) => updateField('material', e.target.value)}>
-              {MATERIAL_TYPES.map((material) => <option key={material} value={material}>{material}</option>)}
-            </select>
-            <input className="input-field" type="number" placeholder="Price" value={form.price} onChange={(e) => updateField('price', e.target.value)} required />
-            <div>
-              <label className="block text-xs text-fg-muted mb-1">Primary Product Image</label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => setImageFile(e.target.files?.[0] || null)}
-                className="input-field"
-              />
-            </div>
-            <div>
-              <label className="block text-xs text-fg-muted mb-1">Additional Images</label>
-              <input
-                type="file"
-                multiple
-                accept="image/*"
-                onChange={(e) => setImageFiles(Array.from(e.target.files || []))}
-                className="input-field"
-              />
-            </div>
-            <input className="input-field" placeholder="Image gradient classes" value={form.imageColor} onChange={(e) => updateField('imageColor', e.target.value)} />
-            <input className="input-field" placeholder="Dimensions" value={form.dimensions} onChange={(e) => updateField('dimensions', e.target.value)} />
-            <input className="input-field" placeholder="Weight" value={form.weight} onChange={(e) => updateField('weight', e.target.value)} />
-            <input className="input-field" placeholder="Print time" value={form.printTime} onChange={(e) => updateField('printTime', e.target.value)} />
-            <label className="flex items-center gap-2 text-sm text-fg">
-              <input type="checkbox" checked={form.inStock} onChange={(e) => updateField('inStock', e.target.checked)} />
-              In stock
-            </label>
-            <div className="md:col-span-2">
-              {error ? <p className="text-red-500 text-sm mb-2">{error}</p> : null}
-              <button disabled={saving} className="bg-cta text-cta-contrast px-5 py-2.5 rounded-lg font-bold disabled:opacity-60">
-                {saving ? 'Saving...' : 'Create Product'}
-              </button>
-            </div>
-          </form>
-        </section>
+        {/* Tabs */}
+        <div className="flex gap-1 bg-surface-card/60 backdrop-blur-sm border border-surface-border/60 p-1.5 rounded-2xl w-fit">
+          {[
+            { id: 'products', label: 'Products Manager', icon: <Package className="w-4 h-4" /> },
+            { id: 'orders', label: 'Orders Manager', icon: <ShoppingBag className="w-4 h-4" /> },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`relative flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all ${
+                activeTab === tab.id ? 'text-white' : 'text-fg-muted hover:text-fg'
+              }`}
+            >
+              {activeTab === tab.id && (
+                <motion.div
+                  layoutId="adminTabBg"
+                  className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary-500 to-accent-500"
+                  initial={false}
+                  transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                />
+              )}
+              <span className="relative z-10">{tab.icon}</span>
+              <span className="relative z-10">{tab.label}</span>
+            </button>
+          ))}
+        </div>
 
-        <section className="bg-surface-card border border-surface-border rounded-2xl p-6">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
-            <h2 className="text-xl font-bold text-fg">Manage Products</h2>
-            <div className="flex flex-wrap items-center gap-3">
-              <input
-                type="text"
-                placeholder="Search products..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="input-field !py-2 !w-auto text-sm min-w-[200px]"
-              />
-              <select 
-                value={sortKey} 
-                onChange={(e) => setSortKey(e.target.value)}
-                className="input-field !py-2 !w-auto text-sm"
-              >
-                <option value="createdAt">Date Added</option>
-                <option value="name">Name</option>
-                <option value="price">Price</option>
-                <option value="stock">Stock Status</option>
-              </select>
-              <select 
-                value={sortOrder} 
-                onChange={(e) => setSortOrder(e.target.value)}
-                className="input-field !py-2 !w-auto text-sm"
-              >
-                <option value="desc">Descending</option>
-                <option value="asc">Ascending</option>
-              </select>
-            </div>
-          </div>
+        <AnimatePresence mode="wait">
+          {activeTab === 'products' ? (
+            <motion.div
+              key="products"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="space-y-6"
+            >
+              {/* Add Product Form */}
+              <section className="rounded-2xl border border-primary-500/20 bg-surface-card/60 backdrop-blur-xl p-6 relative overflow-hidden">
+                <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-primary-500/50 to-accent-500/50" />
+                <h2 className="text-xl font-black text-fg mb-5 flex items-center gap-2">
+                  <Plus className="w-5 h-5 text-primary-500" />
+                  Add New Product
+                </h2>
+                <form onSubmit={handleCreateProduct} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <input className={inputClass} placeholder="Name" value={form.name} onChange={(e) => updateField('name', e.target.value)} required />
+                  <input className={inputClass} placeholder="Slug (optional)" value={form.slug} onChange={(e) => updateField('slug', e.target.value)} />
+                  <input className={`${inputClass} md:col-span-2`} placeholder="Short description" value={form.description} onChange={(e) => updateField('description', e.target.value)} required />
+                  <textarea className={`${inputClass} md:col-span-2 min-h-24 resize-none`} placeholder="Full description" value={form.fullDescription} onChange={(e) => updateField('fullDescription', e.target.value)} required />
+                  <select className={inputClass} value={form.type} onChange={(e) => updateField('type', e.target.value)}>
+                    {PRODUCT_TYPES.map((type) => <option key={type} value={type}>{type}</option>)}
+                  </select>
+                  <select className={inputClass} value={form.material} onChange={(e) => updateField('material', e.target.value)}>
+                    {MATERIAL_TYPES.map((material) => <option key={material} value={material}>{material}</option>)}
+                  </select>
+                  <input className={inputClass} type="number" placeholder="Price" value={form.price} onChange={(e) => updateField('price', e.target.value)} required />
+                  <div>
+                    <label className="block text-xs text-fg-muted font-bold mb-1.5">Primary Product Image</label>
+                    <input type="file" accept="image/*" onChange={(e) => setImageFile(e.target.files?.[0] || null)} className={inputClass} />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-fg-muted font-bold mb-1.5">Additional Images</label>
+                    <input type="file" multiple accept="image/*" onChange={(e) => setImageFiles(Array.from(e.target.files || []))} className={inputClass} />
+                  </div>
+                  <input className={inputClass} placeholder="Image gradient classes" value={form.imageColor} onChange={(e) => updateField('imageColor', e.target.value)} />
+                  <input className={inputClass} placeholder="Dimensions" value={form.dimensions} onChange={(e) => updateField('dimensions', e.target.value)} />
+                  <input className={inputClass} placeholder="Weight" value={form.weight} onChange={(e) => updateField('weight', e.target.value)} />
+                  <input className={inputClass} placeholder="Print time" value={form.printTime} onChange={(e) => updateField('printTime', e.target.value)} />
+                  <label className="flex items-center gap-2 text-sm text-fg font-bold cursor-pointer">
+                    <input type="checkbox" checked={form.inStock} onChange={(e) => updateField('inStock', e.target.checked)} className="w-4 h-4 accent-primary-500" />
+                    In stock
+                  </label>
+                  <div className="md:col-span-2">
+                    {error ? <p className="text-red-400 text-sm mb-3 bg-red-500/10 border border-red-500/20 rounded-xl px-3 py-2">{error}</p> : null}
+                    <motion.button
+                      disabled={saving}
+                      whileHover={!saving ? { scale: 1.02 } : {}}
+                      whileTap={!saving ? { scale: 0.98 } : {}}
+                      className="btn-glow bg-gradient-to-r from-primary-500 to-accent-500 text-white px-6 py-2.5 rounded-xl font-black disabled:opacity-60 flex items-center gap-2"
+                    >
+                      {saving ? (
+                        <>
+                          <motion.div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full" animate={{ rotate: 360 }} transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }} />
+                          Saving...
+                        </>
+                      ) : (
+                        <>
+                          <Plus className="w-4 h-4" />
+                          Create Product
+                        </>
+                      )}
+                    </motion.button>
+                  </div>
+                </form>
+              </section>
 
-          {selectedProductIds.length > 0 && (
-            <div className="mb-4 p-3 bg-surface-muted border border-surface-border rounded-xl flex items-center justify-between transition-all">
-              <span className="text-sm font-medium text-fg">{selectedProductIds.length} products selected</span>
-              <button 
-                onClick={handleBulkDelete}
-                className="px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-500 text-sm font-bold rounded-lg transition-colors border border-red-500/20"
-              >
-                Delete Selected
-              </button>
-            </div>
-          )}
-
-          {error ? <p className="text-red-500 text-sm mb-3">{error}</p> : null}
-          {loading ? (
-            <p className="text-fg-muted">Loading products...</p>
-          ) : products.length === 0 ? (
-            <p className="text-fg-muted text-sm">No products found yet. Create one above.</p>
-          ) : filteredProducts.length === 0 ? (
-            <p className="text-fg-muted text-sm">No products match your search.</p>
-          ) : (
-            <div className="space-y-3">
-              <div className="flex items-center gap-3 px-4 py-3 border border-surface-border rounded-xl bg-surface-muted/30 mb-2 mt-2">
-                 <input 
-                   type="checkbox" 
-                   checked={selectedProductIds.length === filteredProducts.length && filteredProducts.length > 0}
-                   onChange={toggleSelectAll}
-                   className="w-4 h-4 cursor-pointer accent-cta"
-                 />
-                 <span className="text-sm font-bold text-fg">Select All</span>
-              </div>
-              {filteredProducts.map((product) => {
-                const productImages = [product.image, ...(product.images || [])].filter(Boolean);
-                const uniqueImages = [...new Set(productImages)];
-
-                return (
-                <div key={product.id} className={`border rounded-xl p-4 flex flex-col gap-3 transition-colors ${selectedProductIds.includes(product.id) ? 'border-primary-500/50 bg-primary-500/5' : 'border-surface-border'}`}>
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div className="flex items-start gap-4">
-                      <input 
-                        type="checkbox" 
-                        checked={selectedProductIds.includes(product.id)}
-                        onChange={() => toggleSelect(product.id)}
-                        className="mt-1 w-4 h-4 cursor-pointer accent-cta"
-                      />
-                      <div>
-                        <p className="font-bold text-fg">{product.name}</p>
-                        <p className="text-sm text-fg-muted">{product.type} | {product.material} | ₹{product.price}</p>
-                      </div>
-                    </div>
-                    <div className="flex flex-wrap items-center gap-2">
+              {/* Manage Products */}
+              <section className="rounded-2xl border border-surface-border/60 bg-surface-card/60 backdrop-blur-xl p-6 relative overflow-hidden">
+                <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-accent-500/50 to-purple-500/50" />
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-5">
+                  <h2 className="text-xl font-black text-fg">Manage Products</h2>
+                  <div className="flex flex-wrap items-center gap-3">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-fg-subtle" />
                       <input
-                        type="file"
-                        multiple
-                        accept="image/*"
-                        onChange={(e) =>
-                          setAdditionalImagesByProduct((prev) => ({
-                            ...prev,
-                            [product.id]: Array.from(e.target.files || []),
-                          }))
-                        }
-                        className="input-field !py-1.5 !text-xs w-[220px]"
+                        type="text"
+                        placeholder="Search products..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className={`${inputClass} pl-9 !w-auto min-w-[200px]`}
                       />
-                      <button
-                        onClick={() => addImagesToProduct(product.id)}
-                        disabled={uploadingProductId === product.id || !(additionalImagesByProduct[product.id] || []).length}
-                        className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-primary-500/15 text-fg disabled:opacity-50"
-                      >
-                        {uploadingProductId === product.id ? 'Uploading...' : 'Add Images'}
-                      </button>
-                      <button
-                        onClick={() => toggleStock(product)}
-                        className={`px-3 py-1.5 rounded-lg text-sm font-semibold ${product.inStock ? 'bg-green-500/15 text-green-600' : 'bg-amber-500/15 text-amber-600'}`}
-                      >
-                        {product.inStock ? 'Mark Out of Stock' : 'Mark In Stock'}
-                      </button>
-                      <button onClick={() => deleteProduct(product.id)} className="px-3 py-1.5 rounded-lg text-sm font-semibold bg-red-500/15 text-red-600">
-                        Remove Product
-                      </button>
                     </div>
+                    <select value={sortKey} onChange={(e) => setSortKey(e.target.value)} className={`${inputClass} !w-auto`}>
+                      <option value="createdAt">Date Added</option>
+                      <option value="name">Name</option>
+                      <option value="price">Price</option>
+                      <option value="stock">Stock Status</option>
+                    </select>
+                    <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} className={`${inputClass} !w-auto`}>
+                      <option value="desc">Descending</option>
+                      <option value="asc">Ascending</option>
+                    </select>
                   </div>
-
-                  {uniqueImages.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mt-2 pt-2 border-t border-surface-border/50">
-                      {uniqueImages.map(url => (
-                        <div key={url} className="relative w-16 h-16 border border-surface-border rounded-lg bg-surface-muted overflow-hidden group">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src={url} alt="" className="w-full h-full object-cover" />
-                          <button 
-                            onClick={() => deleteProductImage(product.id, url)} 
-                            disabled={deletingImage === url} 
-                            className="absolute inset-0 bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                            title="Delete image"
-                          >
-                            {deletingImage === url ? '...' : (
-                              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-red-400">
-                                <path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-                              </svg>
-                            )}
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
                 </div>
-              )})}
-            </div>
-          )}
-        </section>
-        </>
-        ) : (
-        <section className="bg-surface-card border border-surface-border rounded-2xl p-6">
-          <h2 className="text-xl font-bold text-fg mb-6">Recent Orders</h2>
-          {orders.length === 0 ? (
-            <p className="text-fg-muted text-sm border border-surface-border border-dashed p-8 text-center rounded-xl">No orders received yet.</p>
+
+                {selectedProductIds.length > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-xl flex items-center justify-between"
+                  >
+                    <span className="text-sm font-bold text-fg">{selectedProductIds.length} products selected</span>
+                    <button onClick={handleBulkDelete} className="flex items-center gap-2 px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 text-sm font-black rounded-xl transition-colors border border-red-500/30">
+                      <Trash2 className="w-4 h-4" />
+                      Delete Selected
+                    </button>
+                  </motion.div>
+                )}
+
+                {error ? <p className="text-red-400 text-sm mb-3 bg-red-500/10 border border-red-500/20 rounded-xl px-3 py-2">{error}</p> : null}
+
+                {loading ? (
+                  <div className="flex items-center gap-3 py-8 justify-center">
+                    <motion.div className="w-8 h-8 border-2 border-primary-500/30 border-t-primary-500 rounded-full" animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }} />
+                    <p className="text-fg-muted font-semibold">Loading products...</p>
+                  </div>
+                ) : products.length === 0 ? (
+                  <p className="text-fg-muted text-sm text-center py-8">No products found yet. Create one above.</p>
+                ) : filteredProducts.length === 0 ? (
+                  <p className="text-fg-muted text-sm text-center py-8">No products match your search.</p>
+                ) : (
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3 px-4 py-3 border border-surface-border/60 rounded-xl bg-surface-muted/30">
+                      <input
+                        type="checkbox"
+                        checked={selectedProductIds.length === filteredProducts.length && filteredProducts.length > 0}
+                        onChange={toggleSelectAll}
+                        className="w-4 h-4 cursor-pointer accent-primary-500"
+                      />
+                      <span className="text-sm font-black text-fg">Select All</span>
+                    </div>
+
+                    {filteredProducts.map((product) => {
+                      const productImages = [product.image, ...(product.images || [])].filter(Boolean);
+                      const uniqueImages = [...new Set(productImages)];
+                      return (
+                        <motion.div
+                          key={product.id}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          className={`border rounded-xl p-4 flex flex-col gap-3 transition-all ${
+                            selectedProductIds.includes(product.id)
+                              ? 'border-primary-500/40 bg-primary-500/5'
+                              : 'border-surface-border/60 bg-surface-muted/20'
+                          }`}
+                        >
+                          <div className="flex flex-wrap items-center justify-between gap-3">
+                            <div className="flex items-start gap-4">
+                              <input
+                                type="checkbox"
+                                checked={selectedProductIds.includes(product.id)}
+                                onChange={() => toggleSelect(product.id)}
+                                className="mt-1 w-4 h-4 cursor-pointer accent-primary-500"
+                              />
+                              <div>
+                                <p className="font-black text-fg">{product.name}</p>
+                                <p className="text-sm text-fg-muted">{product.type} | {product.material} | ₹{product.price}</p>
+                              </div>
+                            </div>
+                            <div className="flex flex-wrap items-center gap-2">
+                              <input
+                                type="file"
+                                multiple
+                                accept="image/*"
+                                onChange={(e) => setAdditionalImagesByProduct((prev) => ({ ...prev, [product.id]: Array.from(e.target.files || []) }))}
+                                className={`${inputClass} !py-1.5 !text-xs w-[200px]`}
+                              />
+                              <button
+                                onClick={() => addImagesToProduct(product.id)}
+                                disabled={uploadingProductId === product.id || !(additionalImagesByProduct[product.id] || []).length}
+                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-black bg-primary-500/15 border border-primary-500/30 text-primary-500 disabled:opacity-50 hover:bg-primary-500/25 transition-colors"
+                              >
+                                <Upload className="w-3 h-3" />
+                                {uploadingProductId === product.id ? 'Uploading...' : 'Add Images'}
+                              </button>
+                              <button
+                                onClick={() => toggleStock(product)}
+                                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-black transition-colors ${
+                                  product.inStock
+                                    ? 'bg-green-500/15 border border-green-500/30 text-green-400 hover:bg-green-500/25'
+                                    : 'bg-amber-500/15 border border-amber-500/30 text-amber-400 hover:bg-amber-500/25'
+                                }`}
+                              >
+                                {product.inStock ? <><CheckCircle className="w-3 h-3" /> Mark Out of Stock</> : <><XCircle className="w-3 h-3" /> Mark In Stock</>}
+                              </button>
+                              <button
+                                onClick={() => deleteProduct(product.id)}
+                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-black bg-red-500/15 border border-red-500/30 text-red-400 hover:bg-red-500/25 transition-colors"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                                Remove
+                              </button>
+                            </div>
+                          </div>
+
+                          {uniqueImages.length > 0 && (
+                            <div className="flex flex-wrap gap-2 pt-3 border-t border-surface-border/40">
+                              {uniqueImages.map(url => (
+                                <div key={url} className="relative w-16 h-16 border border-surface-border rounded-xl bg-surface-muted overflow-hidden group">
+                                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                                  <img src={url} alt="" className="w-full h-full object-cover" />
+                                  <button
+                                    onClick={() => deleteProductImage(product.id, url)}
+                                    disabled={deletingImage === url}
+                                    className="absolute inset-0 bg-black/70 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                                    title="Delete image"
+                                  >
+                                    {deletingImage === url ? '...' : <Trash2 className="w-4 h-4 text-red-400" />}
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+                )}
+              </section>
+            </motion.div>
           ) : (
-            <div className="space-y-4">
-              {orders.map(order => (
-                <div key={order.id} className="border border-surface-border rounded-xl p-5 bg-surface-bg flex flex-col md:flex-row gap-6">
-                  <div className="flex-1 space-y-4">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <p className="font-bold text-lg text-fg">{order.orderId}</p>
-                        <p className="text-xs text-fg-muted">{new Date(order.createdAt).toLocaleString()}</p>
-                      </div>
-                      <span className={`px-2.5 py-1 rounded-md text-xs font-bold ${
-                        order.status === 'PAID' ? 'bg-green-500/15 text-green-500' :
-                        order.status === 'PENDING' ? 'bg-amber-500/15 text-amber-500' :
-                        'bg-red-500/15 text-red-500'
-                      }`}>
-                        {order.status}
-                      </span>
-                    </div>
-                    
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-surface-muted/30 p-3 rounded-lg border border-surface-border/50 text-sm">
-                      <div>
-                        <p className="text-fg-muted text-xs uppercase mb-1">Customer</p>
-                        <p className="font-semibold text-fg">{order.customerName}</p>
-                        <p className="text-fg-muted">{order.email}</p>
-                        <p className="text-fg-muted">{order.phone}</p>
-                      </div>
-                      <div>
-                        <p className="text-fg-muted text-xs uppercase mb-1">Shipping</p>
-                        <p className="text-fg-muted">{order.address}</p>
-                        <p className="text-fg-muted">{order.city}, {order.state} {order.pincode}</p>
-                      </div>
-                    </div>
+            <motion.div
+              key="orders"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+            >
+              <section className="rounded-2xl border border-surface-border/60 bg-surface-card/60 backdrop-blur-xl p-6 relative overflow-hidden">
+                <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-cyan-500/50 to-teal-500/50" />
+                <h2 className="text-xl font-black text-fg mb-6 flex items-center gap-2">
+                  <ShoppingBag className="w-5 h-5 text-accent-500" />
+                  Recent Orders
+                </h2>
+                {orders.length === 0 ? (
+                  <div className="text-center py-12 border border-dashed border-surface-border rounded-2xl">
+                    <ShoppingBag className="w-12 h-12 text-fg-subtle mx-auto mb-3" />
+                    <p className="text-fg-muted font-semibold">No orders received yet.</p>
                   </div>
+                ) : (
+                  <div className="space-y-4">
+                    {orders.map((order, i) => (
+                      <motion.div
+                        key={order.id}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.05 }}
+                        className="border border-surface-border/60 rounded-2xl p-5 bg-surface-muted/20 flex flex-col md:flex-row gap-6 relative overflow-hidden"
+                      >
+                        <div className={`absolute left-0 top-0 bottom-0 w-[3px] rounded-l-2xl ${
+                          order.status === 'PAID' ? 'bg-green-500' :
+                          order.status === 'PENDING' ? 'bg-amber-500' : 'bg-red-500'
+                        }`} />
 
-                  <div className="md:w-80 flex flex-col justify-between border-t md:border-t-0 md:border-l border-surface-border pt-4 md:pt-0 md:pl-6">
-                    <div>
-                      <p className="text-fg-muted text-xs uppercase mb-2">Items Included</p>
-                      <ul className="space-y-2 text-sm max-h-[140px] overflow-y-auto">
-                        {order.items?.map(item => (
-                          <li key={item.id} className="flex justify-between items-start">
-                            <span className="text-fg font-medium">{item.fileName}</span>
-                            <span className="text-fg-muted whitespace-nowrap ml-2">₹{item.price}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    
-                    <div className="mt-4 pt-3 border-t border-surface-border space-y-1">
-                      <div className="flex justify-between text-xs text-fg-muted">
-                        <span>Items Total</span>
-                        <span>₹{order.totalAmount - order.deliveryFee}</span>
-                      </div>
-                      <div className="flex justify-between text-xs text-fg-muted">
-                        <span>Delivery</span>
-                        <span>₹{order.deliveryFee}</span>
-                      </div>
-                      <div className="flex justify-between text-base font-bold text-primary-500 pt-1">
-                        <span>Total Paid</span>
-                        <span>₹{order.totalAmount}</span>
-                      </div>
-                    </div>
+                        <div className="flex-1 space-y-4 pl-2">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <p className="font-black text-lg text-fg">{order.orderId}</p>
+                              <p className="text-xs text-fg-muted">{new Date(order.createdAt).toLocaleString()}</p>
+                            </div>
+                            <span className={`px-2.5 py-1 rounded-lg text-xs font-black ${
+                              order.status === 'PAID' ? 'bg-green-500/15 text-green-400 border border-green-500/20' :
+                              order.status === 'PENDING' ? 'bg-amber-500/15 text-amber-400 border border-amber-500/20' :
+                              'bg-red-500/15 text-red-400 border border-red-500/20'
+                            }`}>
+                              {order.status}
+                            </span>
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-surface-muted/40 p-4 rounded-xl border border-surface-border/50 text-sm">
+                            <div>
+                              <p className="text-fg-subtle text-xs uppercase font-black tracking-wider mb-2">Customer</p>
+                              <p className="font-black text-fg">{order.customerName}</p>
+                              <p className="text-fg-muted text-xs">{order.email}</p>
+                              <p className="text-fg-muted text-xs">{order.phone}</p>
+                            </div>
+                            <div>
+                              <p className="text-fg-subtle text-xs uppercase font-black tracking-wider mb-2">Shipping</p>
+                              <p className="text-fg-muted text-xs">{order.address}</p>
+                              <p className="text-fg-muted text-xs">{order.city}, {order.state} {order.pincode}</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="md:w-80 flex flex-col justify-between border-t md:border-t-0 md:border-l border-surface-border/50 pt-4 md:pt-0 md:pl-6">
+                          <div>
+                            <p className="text-fg-subtle text-xs uppercase font-black tracking-wider mb-3">Items Included</p>
+                            <ul className="space-y-2 text-sm max-h-[140px] overflow-y-auto custom-scrollbar">
+                              {order.items?.map(item => (
+                                <li key={item.id} className="flex justify-between items-start">
+                                  <span className="text-fg font-bold text-xs">{item.fileName}</span>
+                                  <span className="text-fg-muted whitespace-nowrap ml-2 text-xs">₹{item.price}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+
+                          <div className="mt-4 pt-3 border-t border-surface-border/50 space-y-1.5">
+                            <div className="flex justify-between text-xs text-fg-muted">
+                              <span>Items Total</span>
+                              <span>₹{order.totalAmount - order.deliveryFee}</span>
+                            </div>
+                            <div className="flex justify-between text-xs text-fg-muted">
+                              <span>Delivery</span>
+                              <span>₹{order.deliveryFee}</span>
+                            </div>
+                            <div className="flex justify-between text-sm font-black text-primary-500 pt-1 border-t border-surface-border/40">
+                              <span>Total Paid</span>
+                              <span>₹{order.totalAmount}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    ))}
                   </div>
-                </div>
-              ))}
-            </div>
+                )}
+              </section>
+            </motion.div>
           )}
-        </section>
-        )}
+        </AnimatePresence>
       </div>
     </main>
   );

@@ -3,20 +3,21 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Script from 'next/script';
-import { ShieldCheck, Truck, CreditCard, ChevronLeft, Package, MapPin, FileText, CheckCircle } from 'lucide-react';
+import { ShieldCheck, Truck, CreditCard, ChevronLeft, Package, MapPin, FileText, CheckCircle, Zap } from 'lucide-react';
 import { useStore } from '@/store/useStore';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function CheckoutPage() {
   const router = useRouter();
   const cart = useStore(state => state.cart);
   const clearCart = useStore(state => state.clearCart);
-  
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [isSuccess, setIsSuccess] = useState(false);
-  
+
   const [formData, setFormData] = useState({
-    customerName: '', 
+    customerName: '',
     email: '',
     phone: '',
     pincode: '',
@@ -28,7 +29,7 @@ export default function CheckoutPage() {
   });
 
   const subtotal = cart.reduce((acc, item) => acc + item.price, 0);
-  const deliveryFee = 0; // Delivery charges removed for now
+  const deliveryFee = 0;
   const totalAmount = subtotal + deliveryFee;
   const canCheckout = true;
 
@@ -41,8 +42,6 @@ export default function CheckoutPage() {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-
-    // Pincode auto-fetch logic
     if (name === 'pincode' && value.length === 6 && /^\d+$/.test(value)) {
       fetchPincodeData(value);
     }
@@ -68,7 +67,6 @@ export default function CheckoutPage() {
   const handleCheckout = async (e) => {
     e.preventDefault();
     if (!canCheckout) return;
-    
     setLoading(true);
     setError('');
 
@@ -76,10 +74,7 @@ export default function CheckoutPage() {
       const response = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          items: cart,
-          ...formData
-        })
+        body: JSON.stringify({ items: cart, ...formData })
       });
 
       const data = await response.json();
@@ -89,10 +84,7 @@ export default function CheckoutPage() {
         await fetch('/api/verify-payment', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            mock_success: true,
-            internal_order_id: data.orderId
-          })
+          body: JSON.stringify({ mock_success: true, internal_order_id: data.orderId })
         });
         setIsSuccess(true);
         clearCart();
@@ -121,27 +113,20 @@ export default function CheckoutPage() {
           if (verifyData.success) {
             setIsSuccess(true);
             clearCart();
-            router.push(`/order/${data.orderId}`); 
+            router.push(`/order/${data.orderId}`);
           } else {
             setError(verifyData.error || 'Payment verification failed');
           }
         },
-        prefill: {
-          name: formData.customerName,
-          email: formData.email,
-          contact: formData.phone
-        },
-        theme: {
-          color: "#993B2A" 
-        }
+        prefill: { name: formData.customerName, email: formData.email, contact: formData.phone },
+        theme: { color: "#6366f1" }
       };
 
       const rzp = new window.Razorpay(options);
-      rzp.on('payment.failed', function (response){
+      rzp.on('payment.failed', function (response) {
         setError(`Payment failed: ${response.error.description}`);
       });
       rzp.open();
-
     } catch (err) {
       console.error(err);
       setError(err.message || 'An error occurred during checkout');
@@ -152,187 +137,236 @@ export default function CheckoutPage() {
 
   if (cart.length === 0) return null;
 
+  const inputClass = "w-full bg-surface-muted/40 border border-surface-border rounded-xl px-4 py-3.5 text-fg focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500/30 transition-all placeholder:text-fg-subtle text-sm backdrop-blur-sm";
+  const labelClass = "block text-sm font-bold text-fg-muted mb-2";
+
   return (
-    <div className="min-h-screen bg-[#0A0A0A] py-8 font-sans text-gray-200">
+    <div className="min-h-screen py-8 font-sans relative overflow-hidden">
       <Script src="https://checkout.razorpay.com/v1/checkout.js" />
-      
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <button 
+
+      {/* Background */}
+      <div className="absolute inset-0 cyber-grid opacity-30 pointer-events-none" />
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent-500/10 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+        {/* Back button */}
+        <motion.button
           onClick={() => router.back()}
-          className="flex items-center gap-2 text-gray-400 hover:text-white font-medium mb-8 transition-colors"
+          whileHover={{ x: -4 }}
+          className="flex items-center gap-2 text-fg-muted hover:text-fg font-bold mb-8 transition-colors"
         >
           <ChevronLeft className="w-5 h-5" />
           Back to gallery
-        </button>
+        </motion.button>
 
-        <h1 className="text-2xl font-bold mb-8 text-white">Secure Checkout</h1>
+        {/* Title */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-black text-fg flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-primary-500/15 border border-primary-500/30 flex items-center justify-center">
+              <ShieldCheck className="w-5 h-5 text-primary-500" />
+            </div>
+            Secure Checkout
+          </h1>
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-8 items-start">
-          
-          {/* Shipping Inputs Form */}
-          <form id="checkout-form" onSubmit={handleCheckout} className="space-y-8 bg-[#12100E] border border-orange-900/30 p-8 rounded-2xl shadow-xl">
-            
-            {error && (
-              <div className="px-4 py-3 bg-red-900/20 border border-red-500/30 text-red-400 rounded-xl font-medium text-sm">
-                {error}
-              </div>
-            )}
 
-            {/* Contact Information */}
-            <div className="space-y-5">
+          {/* Form */}
+          <form id="checkout-form" onSubmit={handleCheckout} className="space-y-8">
+
+            <AnimatePresence>
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  className="px-4 py-3 bg-red-500/10 border border-red-500/30 text-red-400 rounded-xl font-semibold text-sm"
+                >
+                  {error}
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Contact */}
+            <div className="rounded-2xl border border-surface-border/60 bg-surface-card/60 backdrop-blur-xl p-6 space-y-5 relative overflow-hidden">
+              <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-primary-500/50 to-accent-500/50" />
+              <h2 className="text-base font-black text-fg flex items-center gap-2">
+                <div className="w-7 h-7 rounded-lg bg-primary-500/15 border border-primary-500/30 flex items-center justify-center">
+                  <MapPin className="w-3.5 h-3.5 text-primary-500" />
+                </div>
+                Contact Information
+              </h2>
               <div>
-                <label className="block text-sm font-semibold text-gray-400 mb-2">Full Name *</label>
-                <input required name="customerName" value={formData.customerName} onChange={handleInputChange} className="w-full bg-[#0A0A0A] border border-gray-800 rounded-xl px-4 py-3.5 text-gray-200 focus:outline-none focus:border-orange-500/50 transition-colors placeholder-gray-600" placeholder="John Doe" />
+                <label className={labelClass}>Full Name *</label>
+                <input required name="customerName" value={formData.customerName} onChange={handleInputChange} className={inputClass} placeholder="John Doe" />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-400 mb-2">Email Address *</label>
-                <input required type="email" name="email" value={formData.email} onChange={handleInputChange} className="w-full bg-[#0A0A0A] border border-gray-800 rounded-xl px-4 py-3.5 text-gray-200 focus:outline-none focus:border-orange-500/50 transition-colors placeholder-gray-600" placeholder="you@example.com" />
+                <label className={labelClass}>Email Address *</label>
+                <input required type="email" name="email" value={formData.email} onChange={handleInputChange} className={inputClass} placeholder="you@example.com" />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-400 mb-2">Phone Number *</label>
-                <input required name="phone" value={formData.phone} onChange={handleInputChange} className="w-full bg-[#0A0A0A] border border-gray-800 rounded-xl px-4 py-3.5 text-gray-200 focus:outline-none focus:border-orange-500/50 transition-colors placeholder-gray-600" placeholder="+91 98765 43210" />
+                <label className={labelClass}>Phone Number *</label>
+                <input required name="phone" value={formData.phone} onChange={handleInputChange} className={inputClass} placeholder="+91 98765 43210" />
               </div>
             </div>
 
-            <div className="border-t border-gray-800/80 pt-8 space-y-5">
-              <h2 className="text-lg font-bold text-gray-300 flex items-center gap-2 mb-4">
-                <Package className="w-5 h-5 text-orange-500" />
+            {/* Shipping */}
+            <div className="rounded-2xl border border-surface-border/60 bg-surface-card/60 backdrop-blur-xl p-6 space-y-5 relative overflow-hidden">
+              <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-accent-500/50 to-purple-500/50" />
+              <h2 className="text-base font-black text-fg flex items-center gap-2">
+                <div className="w-7 h-7 rounded-lg bg-accent-500/15 border border-accent-500/30 flex items-center justify-center">
+                  <Package className="w-3.5 h-3.5 text-accent-500" />
+                </div>
                 Shipping Address
               </h2>
-              
               <div>
-                <label className="block text-sm font-semibold text-gray-400 mb-2">PIN Code *</label>
-                <input required maxLength={6} name="pincode" value={formData.pincode} onChange={handleInputChange} className="w-full bg-[#0A0A0A] border border-gray-800 rounded-xl px-4 py-3.5 text-gray-200 focus:outline-none focus:border-orange-500/50 transition-colors placeholder-gray-600 tracking-wider" placeholder="6-digit PIN Code" />
+                <label className={labelClass}>PIN Code *</label>
+                <input required maxLength={6} name="pincode" value={formData.pincode} onChange={handleInputChange} className={inputClass} placeholder="6-digit PIN Code" />
               </div>
-
-              <div className="grid grid-cols-2 gap-5">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-semibold text-gray-400 mb-2">City *</label>
-                  <input required name="city" value={formData.city} onChange={handleInputChange} className="w-full bg-[#0A0A0A] border border-gray-800 rounded-xl px-4 py-3.5 text-gray-200 focus:outline-none focus:border-orange-500/50 transition-colors placeholder-gray-600" placeholder="City" />
+                  <label className={labelClass}>City *</label>
+                  <input required name="city" value={formData.city} onChange={handleInputChange} className={inputClass} placeholder="City" />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-gray-400 mb-2">State *</label>
-                  <input required name="state" value={formData.state} onChange={handleInputChange} className="w-full bg-[#0A0A0A] border border-gray-800 rounded-xl px-4 py-3.5 text-gray-200 focus:outline-none focus:border-orange-500/50 transition-colors placeholder-gray-600" placeholder="State" />
+                  <label className={labelClass}>State *</label>
+                  <input required name="state" value={formData.state} onChange={handleInputChange} className={inputClass} placeholder="State" />
                 </div>
               </div>
-
               <div>
-                <label className="block text-sm font-semibold text-gray-400 mb-2">Address Line 1 *</label>
-                <input required name="address1" value={formData.address1} onChange={handleInputChange} className="w-full bg-[#0A0A0A] border border-gray-800 rounded-xl px-4 py-3.5 text-gray-200 focus:outline-none focus:border-orange-500/50 transition-colors placeholder-gray-600" placeholder="House/Flat No, Building Name" />
+                <label className={labelClass}>Address Line 1 *</label>
+                <input required name="address1" value={formData.address1} onChange={handleInputChange} className={inputClass} placeholder="House/Flat No, Building Name" />
               </div>
-
               <div>
-                <label className="block text-sm font-semibold text-gray-400 mb-2">Address Line 2 (Optional)</label>
-                <input name="address2" value={formData.address2} onChange={handleInputChange} className="w-full bg-[#0A0A0A] border border-gray-800 rounded-xl px-4 py-3.5 text-gray-200 focus:outline-none focus:border-orange-500/50 transition-colors placeholder-gray-600" placeholder="Street, Area, Landmark" />
+                <label className={labelClass}>Address Line 2 (Optional)</label>
+                <input name="address2" value={formData.address2} onChange={handleInputChange} className={inputClass} placeholder="Street, Area, Landmark" />
               </div>
             </div>
 
-            <div className="border-t border-gray-800/80 pt-8 space-y-5">
-              <h2 className="text-lg font-bold text-gray-300 flex items-center gap-2 mb-4">
-                <FileText className="w-5 h-5 text-orange-500" />
+            {/* Notes */}
+            <div className="rounded-2xl border border-surface-border/60 bg-surface-card/60 backdrop-blur-xl p-6 space-y-4 relative overflow-hidden">
+              <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-purple-500/50 to-primary-500/50" />
+              <h2 className="text-base font-black text-fg flex items-center gap-2">
+                <div className="w-7 h-7 rounded-lg bg-purple-500/15 border border-purple-500/30 flex items-center justify-center">
+                  <FileText className="w-3.5 h-3.5 text-purple-400" />
+                </div>
                 Order Notes
               </h2>
               <div>
-                <label className="block text-sm font-semibold text-gray-400 mb-2">Special Instructions (Optional)</label>
-                <textarea name="notes" value={formData.notes} onChange={handleInputChange} className="w-full bg-[#0A0A0A] border border-gray-800 rounded-xl px-4 py-3.5 text-gray-200 focus:outline-none focus:border-orange-500/50 min-h-[100px] transition-colors placeholder-gray-600" placeholder="Any special instructions for the print team?" />
+                <label className={labelClass}>Special Instructions (Optional)</label>
+                <textarea name="notes" value={formData.notes} onChange={handleInputChange} className={`${inputClass} min-h-[100px] resize-none`} placeholder="Any special instructions for the print team?" />
               </div>
             </div>
 
-            {/* Trust Badges */}
-            <div className="grid grid-cols-3 gap-4 pt-4">
-               <div className="border border-gray-800 rounded-xl p-4 flex flex-col items-center justify-center text-center gap-2 bg-[#0A0A0A]/50">
-                 <ShieldCheck className="text-orange-500 w-6 h-6" />
-                 <div className="space-y-0.5">
-                   <p className="text-xs font-bold text-gray-300">Quality Checked</p>
-                   <p className="text-[10px] text-gray-500">Printed with care & inspected</p>
-                 </div>
-               </div>
-               <div className="border border-gray-800 rounded-xl p-4 flex flex-col items-center justify-center text-center gap-2 bg-[#0A0A0A]/50">
-                 <Package className="text-orange-500 w-6 h-6" />
-                 <div className="space-y-0.5">
-                   <p className="text-xs font-bold text-gray-300">Secure Packaging</p>
-                   <p className="text-[10px] text-gray-500">Safe transit guaranteed</p>
-                 </div>
-               </div>
-               <div className="border border-gray-800 rounded-xl p-4 flex flex-col items-center justify-center text-center gap-2 bg-[#0A0A0A]/50">
-                 <CreditCard className="text-orange-500 w-6 h-6" />
-                 <div className="space-y-0.5">
-                   <p className="text-xs font-bold text-gray-300">Secure Payment</p>
-                   <p className="text-[10px] text-gray-500">100% encrypted checkout</p>
-                 </div>
-               </div>
+            {/* Trust badges */}
+            <div className="grid grid-cols-3 gap-3">
+              {[
+                { icon: <ShieldCheck className="w-5 h-5 text-primary-500" />, title: 'Quality Checked', sub: 'Printed with care & inspected' },
+                { icon: <Package className="w-5 h-5 text-accent-500" />, title: 'Secure Packaging', sub: 'Safe transit guaranteed' },
+                { icon: <CreditCard className="w-5 h-5 text-purple-400" />, title: 'Secure Payment', sub: '100% encrypted checkout' },
+              ].map((badge, i) => (
+                <div key={i} className="rounded-xl border border-surface-border/60 bg-surface-card/40 backdrop-blur-sm p-4 flex flex-col items-center text-center gap-2">
+                  <div className="w-10 h-10 rounded-xl bg-surface-muted/60 border border-surface-border flex items-center justify-center">
+                    {badge.icon}
+                  </div>
+                  <p className="text-xs font-black text-fg">{badge.title}</p>
+                  <p className="text-[10px] text-fg-subtle leading-tight">{badge.sub}</p>
+                </div>
+              ))}
             </div>
-
           </form>
 
-          {/* Checkout Right Side Panel */}
-          <div className="bg-[#12100E] border border-gray-800/80 rounded-2xl sticky top-8 shadow-xl">
+          {/* Order summary */}
+          <div className="rounded-2xl border border-primary-500/20 bg-surface-card/70 backdrop-blur-xl sticky top-8 overflow-hidden"
+            style={{ boxShadow: '0 0 30px rgba(99,102,241,0.1)' }}
+          >
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-primary-500 via-accent-500 to-primary-500" />
+
             <div className="p-6 md:p-8 space-y-6">
-              
-              <div className="space-y-4 max-h-[250px] overflow-y-auto pr-2 custom-scrollbar">
+              <h2 className="font-black text-fg text-lg">Order Summary</h2>
+
+              {/* Items */}
+              <div className="space-y-3 max-h-[250px] overflow-y-auto custom-scrollbar">
                 {cart.map((item, idx) => (
-                  <div key={`${item.id}-${idx}`} className="bg-[#0A0A0A] border border-gray-800 p-4 rounded-xl">
-                    <div className="flex justify-between items-start">
-                      <p className="font-bold text-sm text-gray-200 truncate pr-4">{item.fileName}</p>
+                  <div key={`${item.id}-${idx}`} className="bg-surface-muted/40 border border-surface-border/60 p-4 rounded-xl">
+                    <div className="flex justify-between items-start mb-2">
+                      <p className="font-bold text-sm text-fg truncate pr-4">{item.fileName}</p>
+                      <p className="text-primary-500 font-black text-sm whitespace-nowrap">₹{item.price}</p>
                     </div>
-                    <div className="flex gap-2 text-[10px] uppercase font-bold text-gray-500 mt-2 mb-3">
-                       <span className="bg-gray-900 px-2 py-1 rounded">{item.config.material}</span>
-                       <span className="bg-gray-900 px-2 py-1 rounded">{item.config.color}</span>
-                       <span className="bg-gray-900 px-2 py-1 rounded">{item.config.strength}% Infill</span>
+                    <div className="flex gap-2 flex-wrap">
+                      {[item.config.material, item.config.color, `${item.config.strength}% Infill`].map((tag) => (
+                        <span key={tag} className="text-[10px] uppercase font-black text-fg-subtle bg-surface-muted px-2 py-0.5 rounded-md border border-surface-border">
+                          {tag}
+                        </span>
+                      ))}
                     </div>
                   </div>
                 ))}
               </div>
 
-              {/* Discount Code */}
+              {/* Discount */}
               <div className="flex gap-2">
-                <input className="flex-1 bg-[#0A0A0A] border border-gray-800 rounded-xl px-4 py-3 text-sm text-gray-200 focus:outline-none focus:border-orange-500/50 placeholder-gray-600" placeholder="DISCOUNT CODE" />
-                <button className="px-6 py-3 bg-[#1A1210] hover:bg-[#251815] border border-orange-900/30 text-orange-500 font-bold text-sm rounded-xl transition-colors">Apply</button>
+                <input className="flex-1 bg-surface-muted/40 border border-surface-border rounded-xl px-4 py-3 text-sm text-fg focus:outline-none focus:border-primary-500/50 placeholder:text-fg-subtle backdrop-blur-sm" placeholder="DISCOUNT CODE" />
+                <button className="px-5 py-3 bg-primary-500/10 hover:bg-primary-500/20 border border-primary-500/30 text-primary-500 font-black text-sm rounded-xl transition-colors">Apply</button>
               </div>
 
-              <div className="space-y-3 font-medium text-sm pt-4 border-t border-gray-800">
-                <div className="flex justify-between text-gray-400">
+              {/* Totals */}
+              <div className="space-y-3 text-sm pt-2 border-t border-surface-border/50">
+                <div className="flex justify-between text-fg-muted">
                   <span>Subtotal</span>
-                  <span className="text-gray-200">₹{subtotal}</span>
+                  <span className="text-fg font-bold">₹{subtotal}</span>
                 </div>
-                <div className="flex justify-between items-center text-gray-400">
+                <div className="flex justify-between items-center text-fg-muted">
                   <span>Shipping</span>
                   {deliveryFee === 0 ? (
-                    <span className="text-green-500">Free</span>
+                    <span className="text-green-400 font-black text-xs bg-green-400/10 border border-green-400/20 px-2 py-0.5 rounded-full">FREE</span>
                   ) : (
-                    <span className="text-gray-200">₹{deliveryFee}</span>
+                    <span className="text-fg font-bold">₹{deliveryFee}</span>
                   )}
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-gray-800 flex justify-between items-end">
-                <div className="space-y-1">
-                  <span className="text-2xl font-black text-white">Total</span>
-                  <p className="text-[10px] text-gray-500">Includes all taxes</p>
+              <div className="pt-4 border-t border-surface-border/50 flex justify-between items-end">
+                <div>
+                  <p className="text-2xl font-black text-fg">Total</p>
+                  <p className="text-[10px] text-fg-subtle">Includes all taxes</p>
                 </div>
-                <span className="text-4xl font-black text-[#FF6347]">₹{totalAmount}</span>
+                <span className="text-4xl font-black gradient-text">₹{totalAmount}</span>
               </div>
 
-
-
-              <button 
-                type="submit" 
+              {/* Place order */}
+              <motion.button
+                type="submit"
                 form="checkout-form"
                 disabled={loading || !canCheckout}
-                className="w-full py-4 rounded-xl font-bold text-base flex items-center justify-center gap-2 bg-[#9B3D2B] hover:bg-[#8A3525] text-white shadow-lg transition-all active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100 disabled:pointer-events-none mt-2"
+                whileHover={!loading ? { scale: 1.02 } : {}}
+                whileTap={!loading ? { scale: 0.98 } : {}}
+                className="w-full py-4 rounded-xl font-black text-base flex items-center justify-center gap-2 btn-glow bg-gradient-to-r from-primary-500 to-accent-500 text-white transition-all disabled:opacity-50 disabled:pointer-events-none"
               >
-                <CreditCard className="w-5 h-5" />
-                {loading ? 'Processing...' : `Place Secure Order`}
-              </button>
+                {loading ? (
+                  <>
+                    <motion.div
+                      className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full"
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
+                    />
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    <CreditCard className="w-5 h-5" />
+                    Place Secure Order
+                  </>
+                )}
+              </motion.button>
 
-              <div className="flex items-center justify-center gap-2 text-[10px] text-gray-500 pt-2">
+              <div className="flex items-center justify-center gap-2 text-[10px] text-fg-subtle">
                 <ShieldCheck className="w-3 h-3" />
                 Payments secured by Razorpay
               </div>
-              
             </div>
           </div>
-
         </div>
       </div>
     </div>

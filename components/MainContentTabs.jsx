@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import UploadBox from './UploadBox';
 import ConfigPanel from './ConfigPanel';
@@ -16,61 +16,57 @@ export default function MainContentTabs() {
 
   return (
     <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 mb-24 flex flex-col items-center">
-      
-      {/* Sleek Segmented Control */}
-      <div id="content" className="bg-surface-muted/90 dark:bg-surface-card/80 backdrop-blur-xl border border-surface-border p-1.5 rounded-2xl flex items-center mb-10 mx-auto sticky top-[90px] z-40 shadow-sm">
-        <button
-          onClick={() => setActiveTab('products')}
-          className={`relative px-6 py-2.5 rounded-xl text-sm font-medium transition-colors flex items-center justify-center gap-2 min-w-[160px] ${
-            visibleTab === 'products' ? 'text-fg' : 'text-fg-muted hover:text-fg'
-          }`}
-        >
-          {visibleTab === 'products' && (
-            <motion.div
-              layoutId="activeTabIndicator"
-              className="absolute inset-0 bg-surface-card border border-surface-border rounded-xl shadow-sm"
-              initial={false}
-              transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-            />
-          )}
-          <PackageSearch className="w-4 h-4 relative z-10" />
-          <span className="relative z-10">Products Gallery</span>
-        </button>
 
-        <button
-          onClick={() => setActiveTab('custom')}
-          className={`relative px-6 py-2.5 rounded-xl text-sm font-medium transition-colors flex items-center justify-center gap-2 min-w-[160px] ${
-            visibleTab === 'custom' ? 'text-fg' : 'text-fg-muted hover:text-fg'
-          }`}
-        >
-          {visibleTab === 'custom' && (
-            <motion.div
-              layoutId="activeTabIndicator"
-              className="absolute inset-0 bg-surface-card border border-surface-border rounded-xl shadow-sm"
-              initial={false}
-              transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-            />
-          )}
-          <PenTool className="w-4 h-4 relative z-10" />
-          <span className="relative z-10">Custom Print</span>
-        </button>
+      {/* Tab switcher */}
+      <div
+        id="content"
+        className="relative bg-surface-card/70 backdrop-blur-xl border border-surface-border/60 p-1.5 rounded-2xl flex items-center mb-12 mx-auto sticky top-[72px] z-40 shadow-xl overflow-hidden"
+        style={{ boxShadow: '0 0 30px rgba(99,102,241,0.1), 0 8px 32px rgba(0,0,0,0.1)' }}
+      >
+        {/* Background glow */}
+        <div className="absolute inset-0 bg-gradient-to-r from-primary-500/5 to-accent-500/5 pointer-events-none" />
+
+        {[
+          { id: 'products', label: 'Products Gallery', icon: <PackageSearch className="w-4 h-4" /> },
+          { id: 'custom', label: 'Custom Print', icon: <PenTool className="w-4 h-4" /> },
+        ].map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`relative px-6 py-2.5 rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2 min-w-[160px] z-10 ${
+              visibleTab === tab.id ? 'text-white' : 'text-fg-muted hover:text-fg'
+            }`}
+          >
+            {visibleTab === tab.id && (
+              <motion.div
+                layoutId="activeTabBg"
+                className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary-500 to-accent-500 shadow-lg"
+                initial={false}
+                transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                style={{ boxShadow: '0 0 20px rgba(99,102,241,0.4)' }}
+              />
+            )}
+            <span className="relative z-10">{tab.icon}</span>
+            <span className="relative z-10">{tab.label}</span>
+          </button>
+        ))}
       </div>
 
-      {/* Content Area */}
+      {/* Content */}
       <div className="w-full relative min-h-[500px]">
         <AnimatePresence mode="wait">
           {visibleTab === 'products' ? (
             <motion.div
               key="products"
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.25 }}
               className="w-full"
             >
-              <div className="text-center max-w-2xl mx-auto mb-10">
-                <h2 className="text-3xl font-bold text-fg mb-4">Print Shop</h2>
-                <div className="h-1 w-20 bg-gradient-to-r from-cta to-cta/40 mx-auto rounded-full mb-4"></div>
+              <div className="text-center max-w-2xl mx-auto mb-12">
+                <h2 className="text-3xl font-black text-fg mb-3">Print Shop</h2>
+                <div className="h-[2px] w-20 bg-gradient-to-r from-primary-500 to-accent-500 mx-auto rounded-full mb-4" />
                 <p className="text-fg-muted">
                   Browse our curated selection of high-quality 3D printed products and accessories, ready to ship.
                 </p>
@@ -81,15 +77,15 @@ export default function MainContentTabs() {
             <motion.div
               key="custom"
               id="quote"
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.25 }}
               className="w-full"
             >
-              <div className="text-center max-w-2xl mx-auto mb-10">
-                <h2 className="text-3xl font-bold text-fg mb-4">Custom Orders</h2>
-                <div className="h-1 w-20 bg-gradient-to-r from-cta to-cta/40 mx-auto rounded-full mb-4"></div>
+              <div className="text-center max-w-2xl mx-auto mb-12">
+                <h2 className="text-3xl font-black text-fg mb-3">Custom Orders</h2>
+                <div className="h-[2px] w-20 bg-gradient-to-r from-primary-500 to-accent-500 mx-auto rounded-full mb-4" />
                 <p className="text-fg-muted">
                   Upload your own 3D models (STL files), configure your material preferences, and get an instant quote.
                 </p>
@@ -106,7 +102,6 @@ export default function MainContentTabs() {
           )}
         </AnimatePresence>
       </div>
-
     </div>
   );
 }
