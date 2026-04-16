@@ -2,10 +2,24 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import Script from 'next/script';
 import { ShieldCheck, Truck, CreditCard, ChevronLeft, Package, MapPin, FileText, CheckCircle, Zap } from 'lucide-react';
 import { useStore } from '@/store/useStore';
 import { motion, AnimatePresence } from 'framer-motion';
+
+// Dynamically loads the Razorpay script — guarantees window.Razorpay
+// is available before the modal opens (works reliably on Vercel/production)
+const loadRazorpayScript = () =>
+  new Promise((resolve) => {
+    if (typeof window !== 'undefined' && window.Razorpay) {
+      resolve(true);
+      return;
+    }
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -92,6 +106,14 @@ export default function CheckoutPage() {
         return;
       }
 
+      // Ensure Razorpay script is loaded before opening modal
+      const scriptLoaded = await loadRazorpayScript();
+      if (!scriptLoaded) {
+        setError('Payment gateway failed to load. Please check your connection and try again.');
+        setLoading(false);
+        return;
+      }
+
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || '',
         amount: data.amount * 100,
@@ -100,31 +122,42 @@ export default function CheckoutPage() {
         description: `Order ${data.orderId}`,
         order_id: data.razorpayOrderId,
         handler: async function (response) {
-          const verifyRes = await fetch('/api/verify-payment', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_signature: response.razorpay_signature,
-            })
-          });
-          const verifyData = await verifyRes.json();
-          if (verifyData.success) {
-            setIsSuccess(true);
-            clearCart();
-            router.push(`/order/${data.orderId}`);
-          } else {
-            setError(verifyData.error || 'Payment verification failed');
+          try {
+            const verifyRes = await fetch('/api/verify-payment', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+              })
+            });
+            const verifyData = await verifyRes.json();
+            if (verifyData.success) {
+              setIsSuccess(true);
+              clearCart();
+              router.push(`/order/${data.orderId}`);
+            } else {
+              setError(verifyData.error || 'Payment verification failed. Please contact support.');
+            }
+          } catch (verifyErr) {
+            console.error('Verification fetch error:', verifyErr);
+            setError('Failed to verify payment. Please contact support with your order ID: ' + data.orderId);
           }
         },
         prefill: { name: formData.customerName, email: formData.email, contact: formData.phone },
-        theme: { color: "#6366f1" }
+        theme: { color: "#6366f1" },
+        modal: {
+          ondismiss: function () {
+            setLoading(false);
+          }
+        }
       };
 
       const rzp = new window.Razorpay(options);
       rzp.on('payment.failed', function (response) {
         setError(`Payment failed: ${response.error.description}`);
+        setLoading(false);
       });
       rzp.open();
     } catch (err) {
@@ -142,7 +175,7 @@ export default function CheckoutPage() {
 
   return (
     <div className="min-h-screen py-8 font-sans relative overflow-hidden">
-      <Script src="https://checkout.razorpay.com/v1/checkout.js" />
+      {/* Razorpay script is loaded dynamically in handleCheckout for Vercel compatibility */}
 
       {/* Background */}
       <div className="absolute inset-0 cyber-grid opacity-30 pointer-events-none" />
